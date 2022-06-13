@@ -39,7 +39,7 @@ export const WalletAddressSelector: React.FC<WalletAddressSelectorProps> = ({
   ...props
 }) => {
   const { options, walletsByID, walletsByAddress } = useMemo(() => ({
-    options: [NEW_WALLET_OPTION, CUSTOM_WALLET_OPTION, ...(wallets || []).map(mapWalletAddressToSelectOption)],
+    options: [CUSTOM_WALLET_OPTION],
     walletsByID: (wallets || []).reduce(reduceWalletsByID, {}),
     walletsByAddress: (wallets || []).reduce(reduceWalletsByAddress, {}),
   }), [wallets]);
