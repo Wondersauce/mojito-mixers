@@ -61,9 +61,9 @@ export const DeliveryWalletSelector: React.FC<DeliveryWalletSelectorProps> = ({
 
         { isCustomWalletAddress(wallet) && (
           <>
-            <Typography variant="body1" sx={{ my: 1.5 }}>
+            {/* <Typography variant="body1" sx={{ my: 1.5 }}>
               Once minted, this is where your items will be delivered:
-            </Typography>
+            </Typography> */}
 
             <TextField
               margin="none"
