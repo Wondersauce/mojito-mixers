@@ -20,7 +20,6 @@
 
 # production
 /build
-/dist
 /app/build
 
 # misc
