@@ -324,8 +324,7 @@ import { DisplayBox } from '../../DisplayBox/DisplayBox.js';
 import { InputGroupLabel } from '../../../shared/InputGroupLabel/InputGroupLabel.js';
 import { TextField } from '../../../shared/TextField/TextField.js';
 import { withInvalidErrorMessage } from '../../../../utils/validationUtils.js';
-import { isValidWalletAddress, isCustomWalletAddress } from '../../../../domain/wallet/wallet.utils.js';
-import { WalletAddressSelector } from '../../../shared/Select/WalletAddressSelector/WalletAddressSelector.js';
+import { isValidWalletAddress } from '../../../../domain/wallet/wallet.utils.js';
 import { useDictionary } from '../../../../hooks/useDictionary.js';
 
 const WALLET_ADDRESS_FIELD_LABEL = "Wallet Address";
@@ -337,7 +336,7 @@ const DeliveryWalletSelector = ({ validatePersonalAddress, wallets, wallet, onWa
     const handleInputChange = useCallback((e) => {
         onWalletChange(e.target.value);
     }, [onWalletChange]);
-    const handleSelectWallet = useCallback((nextWallet) => {
+    useCallback((nextWallet) => {
         onWalletChange(nextWallet);
     }, [onWalletChange]);
     const isAddressOk = isValidWalletAddress(wallet);
@@ -346,10 +345,16 @@ const DeliveryWalletSelector = ({ validatePersonalAddress, wallets, wallet, onWa
         React__default.createElement(InputGroupLabel, { sx: { mt: 2.5, mb: 1.5 } }, "Wallet Delivery Address"),
         React__default.createElement(DisplayBox, null,
             React__default.createElement(Typography, { sx: { mb: 1.5 } }, dictionary.walletInfo),
-            React__default.createElement(WalletAddressSelector, { margin: "none", label: "Wallet", wallets: wallets, wallet: wallet, onSelectWallet: handleSelectWallet, error: showAddressError, helperText: showAddressError ? INVALID_WALLET_ADDRESS_MESSAGE : undefined }),
-            isCustomWalletAddress(wallet) && (React__default.createElement(React__default.Fragment, null,
-                React__default.createElement(TextField, { margin: "none", label: WALLET_ADDRESS_FIELD_LABEL, onChange: handleInputChange, value: wallet, error: showAddressError, helperText: showAddressError ? INVALID_WALLET_ADDRESS_MESSAGE : undefined }),
-                React__default.createElement(Typography, { variant: "body2", sx: { mt: 1.5 } }, "(IMPORTANT: Please make sure the wallet address you provide is correct)"))))));
+            React__default.createElement(TextField, { margin: "none", label: WALLET_ADDRESS_FIELD_LABEL, onChange: handleInputChange, value: wallet, error: showAddressError, helperText: showAddressError ? INVALID_WALLET_ADDRESS_MESSAGE : undefined }),
+            React__default.createElement(Typography, { variant: "body2", sx: { mt: 1.5 } }, "(IMPORTANT: Please make sure the wallet address you provide is correct)"),
+            React__default.createElement("div", { style: { backgroundColor: '#ffffff', padding: '20px 15px', marginBottom: '20px', borderRadius: '4px' } },
+                React__default.createElement("h4", null, "How to setup a wallet"),
+                React__default.createElement("ol", null,
+                    React__default.createElement("li", null,
+                        "Install a wallet such as Metamask at ",
+                        React__default.createElement("a", { href: "https://metamask.io/", target: "_blank" }, "MetaMask.io")),
+                    React__default.createElement("li", null, "Open MetaMask and copy your wallet address (it should look something like 0x000...000)"),
+                    React__default.createElement("li", null, "Paste the wallet address in the input field above"))))));
 };
 
 export { DeliveryWalletSelector };
