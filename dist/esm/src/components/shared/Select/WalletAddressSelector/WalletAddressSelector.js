@@ -2,7 +2,7 @@ import { __rest } from '../../../../../node_modules/tslib/tslib.es6.js';
 import React__default, { useMemo, useCallback, useEffect } from 'react';
 import { Select } from '../Select.js';
 import { isSpecialWalletAddressValue, isCustomWalletAddress } from '../../../../domain/wallet/wallet.utils.js';
-import { NEW_WALLET_OPTION, CUSTOM_WALLET_OPTION } from '../../../../domain/wallet/wallet.constants.js';
+import { CUSTOM_WALLET_OPTION, NEW_WALLET_OPTION } from '../../../../domain/wallet/wallet.constants.js';
 
 const mapWalletAddressToSelectOption = (wallet) => ({
     value: wallet.id,
@@ -19,7 +19,7 @@ const reduceWalletsByAddress = (walletsAcc, wallet) => {
 const WalletAddressSelector = (_a) => {
     var { label, wallets, wallet, onSelectWallet, disabled: parentDisabled, error, helperText } = _a, props = __rest(_a, ["label", "wallets", "wallet", "onSelectWallet", "disabled", "error", "helperText"]);
     const { options, walletsByID, walletsByAddress } = useMemo(() => ({
-        options: [NEW_WALLET_OPTION, CUSTOM_WALLET_OPTION, ...(wallets || []).map(mapWalletAddressToSelectOption)],
+        options: [CUSTOM_WALLET_OPTION, ...(wallets || []).map(mapWalletAddressToSelectOption)],
         walletsByID: (wallets || []).reduce(reduceWalletsByID, {}),
         walletsByAddress: (wallets || []).reduce(reduceWalletsByAddress, {}),
     }), [wallets]);

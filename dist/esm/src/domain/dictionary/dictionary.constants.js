@@ -326,19 +326,13 @@ const walletMultiSigTooltip = (React__default.createElement(React__default.Fragm
     React__default.createElement(Link, { href: "https://gnosis-safe.io/", target: "_blank", rel: "noopener noreferrer" }, "Gnosis Safe MultiSig"),
     " for you to receive your NFT. A MultiSig wallet is used for storing blockchain assets (crypto or NFTs) and enables \u201Cmultiple signatures\u201D to control access. You can transfer your NFTs from your MultiSig wallet to any self-hosted wallet at any time."));
 const walletMultiSigShortTooltip = (React__default.createElement(React__default.Fragment, null, "A MultiSig wallet is used for storing blockchain assets (crypto or NFTs) and enables \u201Cmultiple signatures\u201D to control access. You can transfer your NFTs from your MultiSig wallet to any self-hosted wallet at any time."));
-const multiSigElement = (React__default.createElement(Tooltip, { title: walletMultiSigShortTooltip },
+(React__default.createElement(Tooltip, { title: walletMultiSigShortTooltip },
     React__default.createElement(Link, { sx: { color: "text.primary" } }, "MultiSig")));
 const DEFAULT_DICTIONARY = {
     walletInfo: (React__default.createElement(React__default.Fragment, null,
         React__default.createElement(Typography, { sx: { fontWeight: "500" }, component: "strong" }, "This is where your NFT(s) will be delivered after the sale is over."),
         " ",
-        "We will cover gas cost for minting and delivery on both ",
-        multiSigElement,
-        " and self-hosted wallets. Your items will be delivered to your ",
-        multiSigElement,
-        " wallet by default. If you do not have a Mojito ",
-        multiSigElement,
-        " wallet yet, we will automatically create one for you.")),
+        "We will cover gas cost for minting and delivery on self-hosted wallets. If you do not have your own wallet (such as Metamask or Rainbow) yet, we will automatically create one for you.")),
     walletMultiSigTooltip,
     wirePaymentsDisclaimer: [(React__default.createElement(React__default.Fragment, null,
             React__default.createElement("strong", null, "Third-party wire transfers cannot be accepted. "),

@@ -27,7 +27,7 @@ const reduceWalletsByAddress = (walletsAcc, wallet) => {
 const WalletAddressSelector = (_a) => {
     var { label, wallets, wallet, onSelectWallet, disabled: parentDisabled, error, helperText } = _a, props = tslib_es6.__rest(_a, ["label", "wallets", "wallet", "onSelectWallet", "disabled", "error", "helperText"]);
     const { options, walletsByID, walletsByAddress } = React.useMemo(() => ({
-        options: [wallet_constants.NEW_WALLET_OPTION, wallet_constants.CUSTOM_WALLET_OPTION, ...(wallets || []).map(mapWalletAddressToSelectOption)],
+        options: [wallet_constants.CUSTOM_WALLET_OPTION, ...(wallets || []).map(mapWalletAddressToSelectOption)],
         walletsByID: (wallets || []).reduce(reduceWalletsByID, {}),
         walletsByAddress: (wallets || []).reduce(reduceWalletsByAddress, {}),
     }), [wallets]);
