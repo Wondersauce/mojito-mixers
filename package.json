@@ -1,6 +1,6 @@
 {
   "name": "@mojitonft/mojito-mixers",
-  "version": "1.3.54",
+  "version": "1.3.55",
   "description": "🍸 React components for the Mojito Platform, Reference App and third-party projects.",
   "keywords": [
     "react",
@@ -22,8 +22,8 @@
     "url": "https://github.com/mojitoinc/mojito-mixers/issues",
     "email": "dev-support@mojito.xyz"
   },
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "main": "dist/cjs/src/index.js",
+  "module": "dist/esm/src/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -44,7 +44,8 @@
     "dist:build": "yarn dist:start && yarn dist:clean && rollup -c && yarn dist:end",
     "dist:end": "mv src app/src/lib",
     "dist:uninstall": "rm -rf node_modules",
-    "codegen": "graphql-codegen --config codegen.yml"
+    "codegen": "graphql-codegen --config codegen.yml",
+    "prepare": "yarn run dist:build"
   },
   "dependencies": {
     "@apollo/client": "3.6.5",
