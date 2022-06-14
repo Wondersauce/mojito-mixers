@@ -332,7 +332,7 @@ const DEFAULT_DICTIONARY = {
     walletInfo: (React__default.createElement(React__default.Fragment, null,
         React__default.createElement(Typography, { sx: { fontWeight: "500" }, component: "strong" }, "This is where your NFT(s) will be delivered after the sale is over."),
         " ",
-        "We will cover gas cost for minting and delivery on self-hosted wallets. If you do not have your own wallet (such as Metamask or Rainbow) yet, we will automatically create one for you.")),
+        "We will cover gas cost for minting and delivery on self-hosted wallets.")),
     walletMultiSigTooltip,
     wirePaymentsDisclaimer: [(React__default.createElement(React__default.Fragment, null,
             React__default.createElement("strong", null, "Third-party wire transfers cannot be accepted. "),
