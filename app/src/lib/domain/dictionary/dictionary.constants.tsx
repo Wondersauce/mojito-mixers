@@ -27,7 +27,10 @@ export const DEFAULT_DICTIONARY: PUIDictionary = {
   walletInfo: (
     <>
       <Typography sx={{ fontWeight: "500" }} component="strong">This is where your NFT(s) will be delivered after the sale is over.</Typography>{ " " }
-      We will cover gas cost for minting and delivery on self-hosted wallets.
+      We will cover gas cost for minting and delivery on both { multiSigElement } and
+      self-hosted wallets. Your items will be delivered to your { multiSigElement } wallet
+      by default. If you do not have a Mojito { multiSigElement } wallet yet,
+      we will automatically create one for you.
     </>
   ),
 
