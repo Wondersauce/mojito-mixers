@@ -9,9 +9,10 @@ import { filterSpecialWalletAddressValues } from "../../../../domain/wallet/wall
 
 export interface DeliveryWalletDetailsProps {
   wallet: null | string | Wallet;
+  walletType?: string;
 }
 export const DeliveryWalletDetails: React.FC<DeliveryWalletDetailsProps> = ({
-  wallet,
+  wallet, walletType,
 }) => {
   const dictionary = useDictionary();
   const walletAddress = (typeof wallet === "object" ? wallet?.address : filterSpecialWalletAddressValues(wallet)) || "";
@@ -23,6 +24,7 @@ export const DeliveryWalletDetails: React.FC<DeliveryWalletDetailsProps> = ({
 
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1, mb: walletAddress ? 1 : 0, alignItems: "center" }}>
         <Typography sx={{ fontWeight: "500" }}>{ walletAddress ? "Wallet Address" : "New MultiSig Wallet" }</Typography>
+        { !isMultiSig && <Typography sx={{ fontWeight: "500" }}>{ walletType }</Typography> }
 
         { isMultiSig && (
           <Tooltip title={ dictionary.walletMultiSigTooltip }>

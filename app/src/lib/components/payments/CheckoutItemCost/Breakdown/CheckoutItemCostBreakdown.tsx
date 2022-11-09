@@ -14,6 +14,7 @@ export type CheckoutItemCostBreakdownWarningVariant = "box" | "link";
 export interface CheckoutItemCostBreakdownProps {
   checkoutItems: CheckoutItem[];
   taxes: null | TaxesState;
+  hideDiscount: boolean;
   displayCurrency: FiatCurrency;
   cryptoCurrencies?: CryptoCurrency[];
   onlyCryptoWarningVariant?: CheckoutItemCostBreakdownWarningVariant;
@@ -22,6 +23,7 @@ export interface CheckoutItemCostBreakdownProps {
 export const CheckoutItemCostBreakdown: React.FC<CheckoutItemCostBreakdownProps> = ({
   checkoutItems,
   taxes,
+  hideDiscount,
   displayCurrency,
   cryptoCurrencies,
   onlyCryptoWarningVariant,
@@ -62,6 +64,7 @@ export const CheckoutItemCostBreakdown: React.FC<CheckoutItemCostBreakdownProps>
 
       <CheckoutItemCostTotal
         total={ total }
+        hideDiscount={ hideDiscount }
         fees={ fees === 0 && firstCheckoutItem.lotType === "buyNow" ? null : fees }
         taxes={ taxes }
         displayCurrency={ displayCurrency }

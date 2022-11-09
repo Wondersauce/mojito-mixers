@@ -67,7 +67,7 @@ export const SavedBillingDetailsSelector: React.FC<SavedBillingDetailsSelectorPr
           </Box>
         ) : null }
 
-        <InputGroupLabel sx={{ mt: 2.5, mb: 1.5 }}>Saved Billing Info</InputGroupLabel>
+        { savedPaymentMethods?.length > 0 && <InputGroupLabel sx={{ mt: 2.5, mb: 1.5 }}>Saved Billing Info</InputGroupLabel> }
 
         <StackList
           data={ savedPaymentMethods }

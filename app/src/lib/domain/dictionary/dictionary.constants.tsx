@@ -36,6 +36,39 @@ export const DEFAULT_DICTIONARY: PUIDictionary = {
 
   walletMultiSigTooltip,
 
+  wireConfirmationInstruction: (
+    <>
+      We will process your payment as soon as we receive your deposit. You will
+      receive an email with the status of your payment once it has been processed.
+      <br /><br />
+      Please note that wire transfers usually take 1-3 business days to arrive. We do not
+      charge any deposit fee — however, your bank may charge you a wire transfer fee.
+      <br /><br />
+      You can able to customize your NFT on teamlab once you transfer your NFT to
+      your personal wallet.
+    </>),
+  creditCardPurchaseInstructions: (
+    <>
+      Purchased item info - instructions on how to claim item / how item will be
+      delivered can be placed here
+      <br /><br />
+      Payment processing info can also be added here if payment will take time
+      to process / is not processed instantly
+      <br /><br />
+      Please note that you can’t transfer  your NFTs for 14 days. ‘Reason for why 14
+      days will be mentioned here’. You can customize your NFT once you transfer your
+      NFT to your personal wallet.
+    </>),
+  cryptoPurchaseInstructions: (
+    <>
+      Purchased item info - instructions on how to claim item / how item will be
+      delivered can be placed here
+      <br /><br />
+      Payment processing info can also be added here if payment will take time
+      to process / is not processed instantly
+      <br /><br />
+      You can able to use the customize your NFT once it has been delivered to your personal wallet.
+    </>),
   wirePaymentsDisclaimer: [(
     <>
       <strong>Third-party wire transfers cannot be accepted. </strong>

@@ -45,6 +45,7 @@ interface BillingViewState {
 export interface BillingViewProps {
   orgID: string;
   vertexEnabled?: boolean;
+  hideDiscount: boolean;
   checkoutItems: CheckoutItem[];
   marketType: Market;
   displayCurrency: FiatCurrency;
@@ -70,6 +71,7 @@ export interface BillingViewProps {
 export const BillingView: React.FC<BillingViewProps> = ({
   orgID,
   vertexEnabled,
+  hideDiscount,
   checkoutItems,
   marketType,
   displayCurrency,
@@ -333,7 +335,9 @@ export const BillingView: React.FC<BillingViewProps> = ({
 
       <CheckoutDeliveryAndItemCostBreakdown
         checkoutItems={ checkoutItems }
+        showWalletAddress
         taxes={ vertexEnabled ? taxes : null }
+        hideDiscount={ hideDiscount }
         displayCurrency={ displayCurrency }
         cryptoCurrencies={ cryptoCurrencies }
         onlyCryptoWarningVariant={ marketType === "secondary" ? "box" : undefined }

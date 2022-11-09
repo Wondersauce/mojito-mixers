@@ -22,6 +22,7 @@ export interface CheckoutModalFooterProps {
   variant: CheckoutModalFooterVariant;
   guestCheckoutEnabled?: boolean;
   consentType?: ConsentType;
+  hidePrimaryBtn?: boolean;
 
   // Submit button:
   submitHref?: string;
@@ -49,6 +50,7 @@ export const CheckoutModalFooter: React.FC<CheckoutModalFooterProps> = ({
   variant,
   guestCheckoutEnabled,
   consentType,
+  hidePrimaryBtn = false,
 
   // Submit button:
   submitHref,
@@ -69,7 +71,6 @@ export const CheckoutModalFooter: React.FC<CheckoutModalFooterProps> = ({
   onGoTo,
 }) => {
   // CONSENT:
-
   const showConsent = consentType && VARIANTS_WITH_DISCLAIMER.includes(variant);
   const consentTextElement = showConsent ? <ConsentText /> : null;
 
@@ -112,7 +113,7 @@ export const CheckoutModalFooter: React.FC<CheckoutModalFooterProps> = ({
 
   // SUBMIT BUTTON:
 
-  const primaryButtonVisible = variant !== "toGuestCheckout" || guestCheckoutEnabled;
+  const primaryButtonVisible = (variant !== "toGuestCheckout" || guestCheckoutEnabled) && !hidePrimaryBtn;
   const primaryButtonLabel = submitLabel || LABELS_BY_VARIANT[variant];
   const isPrimaryButtonDisabled = submitDisabled || isFormLoading;
   const PrimaryButtonIcon = ICONS_BY_VARIANT[variant];
@@ -192,16 +193,18 @@ export const CheckoutModalFooter: React.FC<CheckoutModalFooterProps> = ({
         </PrimaryButton>
       ) }
 
-      { primaryButtonVisible && (
-        <PrimaryButton
-          onClickCapture={ onSubmitClicked ? handleSubmitClicked : undefined }
-          disabled={ isPrimaryButtonDisabled }
-          href={ submitHref || undefined }
-          type={ onSubmitClicked ? "button" : "submit" }
-          endIcon={ isFormLoading || submitLoading ? <CircularProgress color="inherit" size="1em" /> : (PrimaryButtonIcon && <PrimaryButtonIcon />) }>
-          { primaryButtonLabel }
-        </PrimaryButton>
-      ) }
+      <Box sx={{ width: 1, display: "flex", justifyContent: "center" }}>
+        { primaryButtonVisible && (
+          <PrimaryButton
+            onClickCapture={ onSubmitClicked ? handleSubmitClicked : undefined }
+            disabled={ isPrimaryButtonDisabled }
+            href={ submitHref || undefined }
+            type={ onSubmitClicked ? "button" : "submit" }
+            endIcon={ isFormLoading || submitLoading ? <CircularProgress color="inherit" size="1em" /> : (PrimaryButtonIcon && <PrimaryButtonIcon />) }>
+            { primaryButtonLabel }
+          </PrimaryButton>
+        ) }
+      </Box>
 
       { variant !== "toMarketplace" && (onCloseClicked || closeDisabled) && (
         <Typography sx={{ color: cancelLinkColor, pt: primaryButtonVisible ? 2 : 0 }}>

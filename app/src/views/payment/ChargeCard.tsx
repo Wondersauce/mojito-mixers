@@ -14,14 +14,12 @@ export const ChargeCard: React.FC = () => {
     try {
       console.log("createPaymentMutation()");
 
-      const res = await createPaymentMutation({
+      await createPaymentMutation({
         variables: {
           paymentMethodID: paymentMethodId,
           invoiceID: invoiceId,
         },
       });
-
-      console.log(res);
     } catch (err) {
       console.log(err);
     }

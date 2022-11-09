@@ -42,6 +42,7 @@ export const CheckoutItemCostPurchase: React.FC<CheckoutItemCostPurchaseProps> =
 
         <CheckoutItemCostTotal
           total={ total }
+          hideDiscount={ false }
           fees={ fees === 0 && firstCheckoutItem.lotType === "buyNow" ? null : fees }
           taxes={{ status: "complete", taxRate, taxAmount }}
           displayCurrency={ displayCurrency }

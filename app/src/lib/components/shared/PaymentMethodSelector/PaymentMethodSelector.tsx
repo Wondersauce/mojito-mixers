@@ -95,7 +95,7 @@ export const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
   }, [onPaymentMethodChange]);
 
   return (
-    <>
+    <Stack sx={{ margin: "2px" }}>
       <div ref={ divRef } style={{ width: `${ maxWidth }px`, height: "1px", marginBottom: "-1px" }} />
 
       <ToggleButtonGroup
@@ -104,6 +104,7 @@ export const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
         onChange={ handleChange }
         aria-label="payment method"
         sx={{ mb: 3.5 }}
+        fullWidth
         ref={ toggleButtonGroupRef }>
 
         { paymentMethods.map((paymentMethod) => {
@@ -136,6 +137,6 @@ export const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
         }) }
 
       </ToggleButtonGroup>
-    </>
+    </Stack>
   );
 };

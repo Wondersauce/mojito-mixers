@@ -1,5 +1,7 @@
 import { ApolloError } from "@apollo/client";
-import { Dispatch, SetStateAction, useState, useCallback } from "react";
+import { Dispatch, SetStateAction, useState, useCallback, useEffect } from "react";
+import { RiskRating, useAddressScreeningMutation } from "../../../queries/graphqlGenerated";
+import { NEW_WALLET_OPTION } from "../../../domain/wallet/wallet.constants";
 import { CircleFieldErrors, parseCircleError } from "../../../domain/circle/circle.utils";
 import { ERROR_GENERIC, MappedError, MAPPED_ERRORS } from "../../../domain/errors/errors.constants";
 import { PaymentMethod, PaymentType } from "../../../domain/payment/payment.interfaces";
@@ -20,6 +22,7 @@ export interface CheckoutModalError {
   error?: ApolloError | Error;
   circleFieldErrors?: CircleFieldErrors;
   errorMessage: string;
+  hidePrimaryBtn?: boolean;
 }
 
 export type CheckoutModalStep = "authentication" | "billing" | "payment" | "purchasing" | "confirmation" | "error";
@@ -39,6 +42,7 @@ export interface CheckoutModalStateOptions {
   paymentIdParam?: string;
   productConfirmationEnabled?: boolean;
   vertexEnabled?: boolean;
+  isChainalysisEnaled?: boolean;
   isAuthenticated?: boolean;
   onError?: (error: CheckoutModalError) => void;
   debug?: boolean;
@@ -68,6 +72,7 @@ export interface PurchaseState {
   invoiceCountdownStart: number | null;
   taxes: null | TaxesState;
   wallet: null | string | Wallet;
+  disablePurchaseBtn?: boolean;
   processorPaymentID: string;
   paymentID: string;
 }
@@ -102,6 +107,7 @@ export function useCheckoutModalState({
   invoiceID: parentInvoiceID = null,
   paymentIdParam,
   productConfirmationEnabled,
+  isChainalysisEnaled = true,
   vertexEnabled,
   isAuthenticated,
   onError,
@@ -144,11 +150,12 @@ export function useCheckoutModalState({
     taxes: vertexEnabled ? { status: "incomplete" } : null,
     wallet: null,
     processorPaymentID: "",
+    disablePurchaseBtn: false,
     paymentID: "",
   });
 
   const initModalState = useCallback(() => {
-    if (debug) console.log("\n⚙️ Init Modal State!\n\n");
+    if (debug) console.log("\n⚙️ Init Modal State!\n\n", { paymentIdParam });
 
     // Make sure the progress tracker in BillingView and PaymentView is properly animated:
     resetStepperProgress();
@@ -194,6 +201,7 @@ export function useCheckoutModalState({
       taxes: vertexEnabled ? { status: "incomplete" } : null,
       wallet: null, // Wallet is added from invoice: `setWalletAddress(nextWallet || destinationAddress)`
       processorPaymentID: checkoutModalState.processorPaymentID || "",
+      disablePurchaseBtn: false,
       paymentID: checkoutModalState.paymentID || "",
     });
 
@@ -297,6 +305,51 @@ export function useCheckoutModalState({
   const setTaxes = useCallback((nextTaxes: TaxesState) => {
     setPurchaseState(prevPurchaseState => ({ ...prevPurchaseState, taxes: nextTaxes }));
   }, []);
+
+  const [addressScreeningMutation] = useAddressScreeningMutation();
+
+  const addressScreening = useCallback(async (orgId: string, address: string) => {
+    let res = RiskRating.Low;
+    try {
+      const response = await addressScreeningMutation({
+        variables: {
+          orgId,
+          input: {
+            address,
+            network: "ethereum",
+            asset: "ETH",
+          },
+        },
+      });
+      res = response.data?.addressScreening || RiskRating.High;
+    } catch (error) {
+      console.log(error);
+    }
+
+    return res;
+  }, [addressScreeningMutation]);
+
+  useEffect(() => {
+    const walletAddress = (typeof wallet === "object" ? wallet?.address : wallet) || "";
+    if (isChainalysisEnaled && isValidWalletAddress(walletAddress) && walletAddress !== NEW_WALLET_OPTION.value) {
+      addressScreening(parentOrgID, walletAddress)
+        .then((res) => {
+          if (res === RiskRating.High) {
+            const nextCheckoutError: CheckoutModalError = {
+              errorMessage: MAPPED_ERRORS.INVALID_WALLET.errorMessage,
+              hidePrimaryBtn: true,
+            };
+            if (onError) onError(nextCheckoutError);
+
+            setCheckoutModalState({
+              checkoutStep: "error",
+              checkoutError: nextCheckoutError,
+              isDialogBlocked: true,
+            });
+          }
+        });
+    }
+  }, [onError, parentOrgID, addressScreening, wallet, isChainalysisEnaled]);
 
   const setWalletAddress = useCallback((nextWallet: null | string | Wallet) => {
     setPurchaseState(prevPurchaseState => ({ ...prevPurchaseState, wallet: nextWallet }));

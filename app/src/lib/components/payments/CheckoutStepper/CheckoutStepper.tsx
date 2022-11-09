@@ -1,6 +1,7 @@
 import { Typography, Divider, Stack, Box } from "@mui/material";
 import { useTimeout } from "@swyg/corre";
 import React, { useState } from "react";
+import { useTheme } from "@mui/material/styles";
 
 export interface CheckoutStepperProps {
   progress: 50 | 100;
@@ -16,6 +17,7 @@ export const CheckoutStepper: React.FC<CheckoutStepperProps> = ({
   progress: currentProgress,
 }) => {
   const [progress, setProgress] = useState(lastProgress);
+  const { palette } = useTheme();
 
   useTimeout(() => {
     setProgress(lastProgress = currentProgress);
@@ -37,7 +39,7 @@ export const CheckoutStepper: React.FC<CheckoutStepperProps> = ({
           position: "relative",
           width: "100%",
           height: 2,
-          background: theme => theme.palette.paymentUI?.progressBar || theme.palette.primary.main,
+          background: palette.paymentUI?.progressBar || palette.primary.main,
         }}>
         <Divider sx={{
           borderWidth: 0,

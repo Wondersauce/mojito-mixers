@@ -16,6 +16,8 @@ export function isCheckoutModalInfoPlaid(checkoutModalInfo: Partial<CheckoutModa
 }
 
 export function persistCheckoutModalInfo(info: CheckoutModalInfo) {
+  console.log("[TEST]-persistCheckoutModalInfo", { info, IS_SERVER });
+
   if (IS_SERVER) return;
 
   try {
@@ -29,6 +31,7 @@ export function persistCheckoutModalInfo(info: CheckoutModalInfo) {
     }, {
       expirationDate: new Date(Date.now() + (isCheckoutModalInfo3DS(info) ? THREEDS_STORAGE_EXPIRATION_MS : PLAID_STORAGE_EXPIRATION_MS)),
     });
+    console.log("[TEST]-persistCheckoutModalInfo-2", { info, IS_SERVER });
   } catch (err) {
     if (debug) console.log(err);
   }
@@ -65,6 +68,8 @@ export function getCheckoutModalState({
 }: GetCheckoutModalStateOptions): CheckoutModalStateCombined {
   let modalState = FALLBACK_MODAL_STATE_COMMON;
 
+  console.log("[TEST]-getCheckoutModalState", { modalState, IS_SERVER });
+
   if (IS_SERVER) return modalState;
 
   let hasSavedModalInfo = false;
@@ -83,6 +88,7 @@ export function getCheckoutModalState({
     savedModalInfo = rawSavedModalInfo || {};
     savedReceivedRedirectUri = cookieStorage.getItem(CHECKOUT_MODAL_INFO_REDIRECT_URI_KEY) || "";
     savedInfoUsed = cookieStorage.getItem(CHECKOUT_MODAL_INFO_USED_KEY) || false;
+    console.log("[TEST]-getCheckoutModalState-1", rawSavedModalInfo);
   } catch (err) {
     if (debug) console.log(err);
   }
@@ -98,9 +104,10 @@ export function getCheckoutModalState({
 
   const receivedRedirectUri = savedReceivedRedirectUri || window.location.href;
 
+  const validPayment = !!(url && orgID && invoiceID && billingInfo && receivedRedirectUri);
   // In dev, this works fine even if there's nothing in cookieStorage, which helps with testing across some other domain and localhost:
   let isValid = fromLocalhost || !!(url && orgID && invoiceID && billingInfo && receivedRedirectUri);
-
+  console.log("[Test]-ModelState", { fromLocalhost, validPayment, url, orgID, invoiceID, billingInfo, receivedRedirectUri, savedInfoUsed, noClear });
   if (isValid && !savedInfoUsed) {
     if (!noClear) clearPersistedInfo();
 
@@ -153,6 +160,8 @@ export function getCheckoutModalState({
         paymentInfo !== undefined &&
         checkoutItems.length > 0 &&
         (purchaseError || purchaseSuccess);
+
+      console.log("[Test]-ModelState-2", { isValid, processorPaymentID, paymentID, paymentInfo, checkoutItems, purchaseError, purchaseSuccess });
 
       if (isValid) {
         modalState = {

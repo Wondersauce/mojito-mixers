@@ -86,6 +86,31 @@ export type AchPaymentMethodPrepareStatementOutput = {
   linkToken: Scalars['String'];
 };
 
+export type ActiveWalletFilterInput = {
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<ActiveWalletSortInput>;
+};
+
+export enum ActiveWalletSortInput {
+  MostSaved = 'most_saved',
+  PriceHighToLow = 'price_high_to_low',
+  PriceLowToHigh = 'price_low_to_high',
+  PurchasedFromOrg = 'purchased_from_org',
+  RecentlyListed = 'recently_listed',
+  RecentlyMinted = 'recently_minted'
+}
+
+export enum ActivityName {
+  BoughtItem = 'Bought_Item',
+  ListedItem = 'Listed_Item',
+  ListedItemRemoved = 'Listed_Item_Removed',
+  OfferCancelled = 'Offer_Cancelled',
+  OfferExpired = 'Offer_Expired',
+  OfferRejected = 'Offer_Rejected',
+  Offered = 'Offered',
+  SoldItem = 'Sold_Item'
+}
+
 export type Address = {
   __typename?: 'Address';
   buildingName?: Maybe<Scalars['String']>;
@@ -104,7 +129,7 @@ export type Address = {
 
 export type AddressInput = {
   buildingName?: InputMaybe<Scalars['String']>;
-  buildingNumber: Scalars['String'];
+  buildingNumber?: InputMaybe<Scalars['String']>;
   country: Scalars['String'];
   flatNumber?: InputMaybe<Scalars['String']>;
   line1?: InputMaybe<Scalars['String']>;
@@ -112,9 +137,9 @@ export type AddressInput = {
   line3?: InputMaybe<Scalars['String']>;
   postcode: Scalars['String'];
   state?: InputMaybe<Scalars['String']>;
-  street: Scalars['String'];
+  street?: InputMaybe<Scalars['String']>;
   subStreet?: InputMaybe<Scalars['String']>;
-  town: Scalars['String'];
+  town?: InputMaybe<Scalars['String']>;
 };
 
 export type AddressScreeningInput = {
@@ -125,11 +150,13 @@ export type AddressScreeningInput = {
 
 export type AllowList = {
   __typename?: 'AllowList';
+  description: Scalars['String'];
   elements: Array<AllowListElement>;
   endTime: Scalars['Time'];
   filteringType: FilteringType;
   id: Scalars['UUID1'];
   identifierType: IdentifierType;
+  name: Scalars['String'];
   startTime: Scalars['Time'];
 };
 
@@ -140,11 +167,23 @@ export type AllowListElement = {
 };
 
 export type AllowListInput = {
+  description: Scalars['String'];
   elements: Array<Scalars['String']>;
   endTime: Scalars['Time'];
   filteringType: FilteringType;
   identifierType: IdentifierType;
+  name: Scalars['String'];
   startTime: Scalars['Time'];
+};
+
+export type AllowListRequest = {
+  description?: InputMaybe<Scalars['String']>;
+  endTime?: InputMaybe<Scalars['Time']>;
+  filteringType?: InputMaybe<Scalars['String']>;
+  identifierType?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  startTime?: InputMaybe<Scalars['Time']>;
+  updatedAt?: InputMaybe<Scalars['Time']>;
 };
 
 export type ApplicantRequest = {
@@ -166,6 +205,36 @@ export type ApplicantResponse = {
   id: Scalars['String'];
   idNumbers?: Maybe<Array<Maybe<IdNumber>>>;
   lastName: Scalars['String'];
+};
+
+export type Artist = {
+  __typename?: 'Artist';
+  active: Scalars['Boolean'];
+  artistContactEmail: Scalars['String'];
+  artistContactNumber: Scalars['String'];
+  artistLocation: Scalars['String'];
+  artistName: Scalars['String'];
+  artistWebsite?: Maybe<Scalars['String']>;
+  createdAt: Scalars['Time'];
+  description: Scalars['String'];
+  id: Scalars['UUID1'];
+  marketplace: Marketplace;
+  marketplaceId: Scalars['UUID1'];
+  organization: Organization;
+  organizationId: Scalars['UUID1'];
+  priority: Scalars['Int'];
+};
+
+export type ArtistInput = {
+  artistContactEmail?: InputMaybe<Scalars['String']>;
+  artistContactNumber?: InputMaybe<Scalars['String']>;
+  artistLocation?: InputMaybe<Scalars['String']>;
+  artistName: Scalars['String'];
+  artistWebsite?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  marketplaceId: Scalars['UUID1'];
+  organizationId: Scalars['UUID1'];
+  priority: Scalars['Int'];
 };
 
 export type Asset = {
@@ -192,7 +261,12 @@ export type AssetVersion = {
   slug: Scalars['String'];
 };
 
-export type AttributeValue = AttributeValueFloat | AttributeValueInt | AttributeValueString;
+export type AttributeValue = AttributeValueBool | AttributeValueFloat | AttributeValueInt | AttributeValueString;
+
+export type AttributeValueBool = {
+  __typename?: 'AttributeValueBool';
+  boolValue: Scalars['Boolean'];
+};
 
 export type AttributeValueFloat = {
   __typename?: 'AttributeValueFloat';
@@ -228,6 +302,12 @@ export type BidFilterInput = {
   userId?: InputMaybe<Scalars['UUID']>;
 };
 
+export type BuyNowTransactionResponse = {
+  __typename?: 'BuyNowTransactionResponse';
+  order?: Maybe<Order>;
+  success: Scalars['Boolean'];
+};
+
 export type BuyerDetailOutput = {
   __typename?: 'BuyerDetailOutput';
   externalUserID: Scalars['String'];
@@ -238,6 +318,52 @@ export type BuyerDetailOutput = {
   userId: Scalars['UUID1'];
   username?: Maybe<Scalars['String']>;
 };
+
+export type Card = {
+  first6: Scalars['String'];
+  hash: Scalars['String'];
+  last4: Scalars['String'];
+};
+
+export type CardResponse = {
+  __typename?: 'CardResponse';
+  level?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['String']>;
+};
+
+export type CardScreeningInput = {
+  customer?: InputMaybe<CustomerInput>;
+  flow: Scalars['String'];
+  sessionKey: Scalars['String'];
+  transaction: TransactionInput;
+};
+
+export type Category = {
+  __typename?: 'Category';
+  active: Scalars['Boolean'];
+  createdAt: Scalars['Time'];
+  description: Scalars['String'];
+  id: Scalars['UUID1'];
+  marketplace: Marketplace;
+  marketplaceId: Scalars['UUID1'];
+  name: Scalars['String'];
+  organization: Organization;
+  organizationId: Scalars['UUID1'];
+  priority: Scalars['Int'];
+};
+
+export type CategoryInput = {
+  description?: InputMaybe<Scalars['String']>;
+  marketplaceId: Scalars['UUID1'];
+  name: Scalars['String'];
+  organizationId: Scalars['UUID1'];
+  priority: Scalars['Int'];
+};
+
+export enum ChainalysisNetwork {
+  Ethereum = 'Ethereum',
+  Polygon = 'Polygon'
+}
 
 export type CheckResponse = {
   __typename?: 'CheckResponse';
@@ -250,10 +376,31 @@ export enum CollectionType {
   Tk2 = 'TK2'
 }
 
+export type Contract = {
+  __typename?: 'Contract';
+  Address?: Maybe<Scalars['String']>;
+  ContractMetadata?: Maybe<ContractMetaData>;
+};
+
+export type ContractMetaData = {
+  __typename?: 'ContractMetaData';
+  Name?: Maybe<Scalars['String']>;
+  Symbol?: Maybe<Scalars['String']>;
+  TokenType?: Maybe<Scalars['String']>;
+  TotalSupply?: Maybe<Scalars['String']>;
+};
+
 export enum ContractType {
   Erc721Creator = 'ERC721Creator',
   Erc1155Creator = 'ERC1155Creator'
 }
+
+export type CreateEmailTemplateInput = {
+  eventType: EventType;
+  orgID: Scalars['UUID1'];
+  subject: Scalars['String'];
+  templateContent: Scalars['String'];
+};
 
 export type CreateMarketplaceBuyNowLotInput = {
   collectionId: Scalars['UUID1'];
@@ -276,6 +423,12 @@ export type CreateMarketplaceClaimableSetInput = {
   promoCodeConfig?: InputMaybe<MarketplaceItemCodeConfigInput>;
   startDate: Scalars['Time'];
   totalUnits: Scalars['Int'];
+};
+
+export type CreatePdfTemplateInput = {
+  orgID: Scalars['UUID1'];
+  pdfTemplateType: EventType;
+  templateContent: Scalars['String'];
 };
 
 export type CreatePaymentCreditCardMetadataInput = {
@@ -357,8 +510,14 @@ export type CryptoBillingDetails = {
   city?: InputMaybe<Scalars['String']>;
   country?: InputMaybe<Scalars['String']>;
   district?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
   postalCode?: InputMaybe<Scalars['String']>;
 };
+
+export enum CryptoCurrenyCode {
+  Eth = 'ETH',
+  Matic = 'MATIC'
+}
 
 export type CryptoPaymentDetails = {
   __typename?: 'CryptoPaymentDetails';
@@ -397,6 +556,25 @@ export type CurrentUserUserOrgsArgs = {
 
 export type CurrentUserWonBidsArgs = {
   orgId: Scalars['UUID'];
+};
+
+export type CustomerAddress = {
+  city: Scalars['String'];
+  countryCode: Scalars['String'];
+  postalCode: Scalars['String'];
+  regionCode: Scalars['String'];
+  street1: Scalars['String'];
+  street2: Scalars['String'];
+};
+
+export type CustomerInput = {
+  address?: InputMaybe<CustomerAddress>;
+  emailAddress: Scalars['String'];
+  firstName: Scalars['String'];
+  isEmailVerified: Scalars['Boolean'];
+  isPhoneVerified: Scalars['Boolean'];
+  lastName: Scalars['String'];
+  phone?: InputMaybe<Scalars['String']>;
 };
 
 export enum DeliveryMethod {
@@ -448,14 +626,77 @@ export type Erc721Metadata = {
   timestamp?: Maybe<Scalars['Int']>;
 };
 
+export type Erc1155Metadata = {
+  __typename?: 'ERC1155Metadata';
+  tokenId?: Maybe<Scalars['Int']>;
+  value?: Maybe<Scalars['Int']>;
+};
+
+export type EmailTemplate = {
+  __typename?: 'EmailTemplate';
+  active: Scalars['Boolean'];
+  eventType: EventType;
+  id: Scalars['UUID1'];
+  organization: Organization;
+  organizationID: Scalars['UUID1'];
+  subject: Scalars['String'];
+  templateContent: Scalars['String'];
+};
+
+export enum EventType {
+  BidCanceled = 'BidCanceled',
+  BidOutBid = 'BidOutBid',
+  BidWon = 'BidWon',
+  BuyerInvoice = 'BuyerInvoice',
+  EnquiryToListForSale = 'EnquiryToListForSale',
+  EnquiryToListSubmittedSeller = 'EnquiryToListSubmittedSeller',
+  ItemNewOffer = 'ItemNewOffer',
+  ItemOfferAccepted = 'ItemOfferAccepted',
+  ItemOfferRejected = 'ItemOfferRejected',
+  ItemPurchased = 'ItemPurchased',
+  KycApproval = 'KYCApproval',
+  KycRejected = 'KYCRejected',
+  LeadingBid = 'LeadingBid',
+  NftListedForSaleAdmin = 'NFTListedForSaleAdmin',
+  OrderCompletion = 'OrderCompletion',
+  ResetPassowrd = 'ResetPassowrd',
+  SavedItemListedForSale = 'SavedItemListedForSale',
+  SellerReceipt = 'SellerReceipt',
+  TokenClaimed = 'TokenClaimed',
+  TokenTransferComplete = 'TokenTransferComplete',
+  UserInvitation = 'UserInvitation',
+  UserSignUp = 'UserSignUp',
+  VerifyAccount = 'VerifyAccount',
+  WalletRejection = 'WalletRejection',
+  WirePaymentDetails = 'WirePaymentDetails'
+}
+
 export enum ExtensionType {
   ProvenanceExtension = 'ProvenanceExtension',
   RedeemableExtension = 'RedeemableExtension'
 }
 
+export type FavoriteNftResponse = {
+  __typename?: 'FavoriteNFTResponse';
+  data: Array<Maybe<WalletToken>>;
+  totalCount: Scalars['Int'];
+  user?: Maybe<UserResponse>;
+};
+
+export enum FiatCurrencyCode {
+  Usd = 'USD'
+}
+
 export enum FilteringType {
   AllowList = 'AllowList'
 }
+
+export type GetUsdPriceResponse = {
+  __typename?: 'GetUSDPriceResponse';
+  amount: Scalars['String'];
+  base: Scalars['String'];
+  currency: Scalars['String'];
+};
 
 export type IdNumber = {
   __typename?: 'IDNumber';
@@ -472,7 +713,8 @@ export type IdNumberInput = {
 
 export enum IdentifierType {
   ExternalUserId = 'ExternalUserID',
-  UserId = 'UserID'
+  UserId = 'UserID',
+  WalletAddress = 'WalletAddress'
 }
 
 export type InvoiceDetails = {
@@ -485,6 +727,7 @@ export type InvoiceDetails = {
   invoiceCreatedAt: Scalars['Time'];
   invoiceID: Scalars['UUID1'];
   invoiceNumber: Scalars['Int'];
+  invoiceURL?: Maybe<Scalars['String']>;
   items: Array<Maybe<ItemInvoiceDetail>>;
   paymentID: Scalars['UUID1'];
   status: InvoiceStatus;
@@ -538,6 +781,11 @@ export enum KycStatus {
   Pending = 'Pending'
 }
 
+export enum ListingStatus {
+  Active = 'Active',
+  InActive = 'InActive'
+}
+
 export type LocalPrice = {
   amount: Scalars['Float'];
   currency: Scalars['String'];
@@ -557,6 +805,7 @@ export type Marketplace = {
   organizationID: Scalars['String'];
   theme?: Maybe<Scalars['String']>;
   tokens?: Maybe<Array<MarketplaceToken>>;
+  wirePaymentExpiration: Scalars['Int'];
 };
 
 export type MarketplaceAuctionBid = {
@@ -693,6 +942,14 @@ export type MarketplaceClaimableCodeOutput = {
   id: Scalars['UUID1'];
   isASingleUseCode: Scalars['Boolean'];
   redeemed: Scalars['Boolean'];
+  redemptions: Array<MarketplaceClaimableCodeRedemptionOutput>;
+};
+
+export type MarketplaceClaimableCodeRedemptionOutput = {
+  __typename?: 'MarketplaceClaimableCodeRedemptionOutput';
+  code: Scalars['String'];
+  dateClaimed?: Maybe<Scalars['Time']>;
+  walletAddress?: Maybe<Scalars['String']>;
 };
 
 export type MarketplaceClaimableOutput = {
@@ -710,10 +967,12 @@ export type MarketplaceClaimableOutput = {
 export type MarketplaceCollection = {
   __typename?: 'MarketplaceCollection';
   collectionType: CollectionType;
+  configuration?: Maybe<MarketplaceCollectionConfiguration>;
   description: Scalars['String'];
   endDate?: Maybe<Scalars['Time']>;
   id: Scalars['UUID1'];
   items?: Maybe<Array<MarketplaceCollectionItem>>;
+  itemsCount: Scalars['Int'];
   marketplaceID: Scalars['UUID1'];
   name: Scalars['String'];
   slug: Scalars['String'];
@@ -726,6 +985,18 @@ export type MarketplaceCollectionItemsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
   statuses?: InputMaybe<Array<InputMaybe<MarketplaceCollectionItemStatus>>>;
+};
+
+
+export type MarketplaceCollectionItemsCountArgs = {
+  statuses?: InputMaybe<Array<InputMaybe<MarketplaceCollectionItemStatus>>>;
+};
+
+export type MarketplaceCollectionConfiguration = {
+  __typename?: 'MarketplaceCollectionConfiguration';
+  purchaseLimit?: Maybe<Scalars['Int']>;
+  taxInvoiceSapType?: Maybe<Scalars['String']>;
+  taxInvoiceSku?: Maybe<Scalars['String']>;
 };
 
 export type MarketplaceCollectionCreateInput = {
@@ -812,6 +1083,7 @@ export type MarketplaceItemDeliveryErc721TransferByRangeInput = {
 };
 
 export type MarketplaceItemDeliveryErc721TransferInput = {
+  RelayTxInfo?: InputMaybe<RelayTxInput>;
   contractAddress: Scalars['String'];
   onChainTokenId: Scalars['Int'];
   ownerWalletId: Scalars['UUID1'];
@@ -876,6 +1148,7 @@ export type MarketplaceToken = {
   marketplaceID: Scalars['UUID'];
   name?: Maybe<Scalars['String']>;
   nftContractAddress: Scalars['String'];
+  nftToken: NftToken;
   nftTokenID?: Maybe<Scalars['UUID']>;
   onChainTokenID: Scalars['Int'];
 };
@@ -897,7 +1170,10 @@ export type MetadataAttributes = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /**  acceptOffer approves the offer and transfers the nft ownership  */
+  acceptOffer: Scalars['Boolean'];
   addAllowListToBuyNowLot: Scalars['Boolean'];
+  addAllowListToClaimableSet: Scalars['Boolean'];
   /**
    * Add an existing lot to User favorite lots list.
    *     If lot is already exists, then do nothing.
@@ -905,69 +1181,119 @@ export type Mutation = {
    */
   addCollectionItemToUserFavorites: Scalars['Boolean'];
   addExistingTokenToCollection: Scalars['String'];
+  /** addMultisigOwner mutation adds new owner for the existing multisig wallet */
+  addMultisigOwner: Wallet;
+  /** addNFTToFavorite adds the given nft to the favorite list of user */
+  addNFTToFavourite: Scalars['Boolean'];
   addOrganization: Organization;
+  /**  addSupportedCountry add the supported countries and stores into db  */
+  addSupportedCountry: SupportedCountry;
+  /** addSupportedCurrency mutation to add the supported currency */
+  addSupportedCurrency: SupportedCurrency;
+  /** Creates registry tokens for the given orgid, networkid, marketplaceID, contract address, artistid, categoryid and list of token id's in registry, nft_contracts, registry_tokens. nft_tokens, marketplace_tokens, marketplace_collection_items, marketplace_collection_items_marketplace_tokens tables */
+  addToRegistry: Scalars['Boolean'];
+  /** Creates new registry token with input data */
+  addToken: Scalars['Boolean'];
   addTokensToCollection: Scalars['String'];
   /** Screens wallet address takes input arguments address, asset, network provides risk rating */
   addressScreening: RiskRating;
   burnToken: Scalars['String'];
   cancelMarketplaceAuctionBid: Scalars['Boolean'];
+  /**  cancelOffer cancels an offer by the buyer  */
+  cancelOffer: Scalars['String'];
   /** Cancels payment by ID, can be called by org admin */
   cancelPayment: Scalars['Boolean'];
   cancelTokenTransfer: Scalars['Boolean'];
+  /** Change password for user */
+  changePassword: Scalars['String'];
   /** Check Token Owner mutation takes the input arguments contractId, address, rangeStart, rangeEnd and then it check based on given contract ID and address matched within given range (start, end), If matched it returns the list of token Ids. */
   checkTokenOwners: Array<Maybe<Scalars['Int']>>;
   /** checkWalletTokens mutation checks what NFTs a user owns within a specific contract and token range */
   checkWalletTokens: Array<Maybe<Scalars['Int']>>;
+  /** connectExternalWallet verifies the signature provided by an external wallet and marks it as an active external wallet to the user */
+  connectExternalWallet: Scalars['Boolean'];
   createAllowList?: Maybe<Scalars['UUID1']>;
   /** Creates new Applicant based on input data. */
   createApplicant: ApplicantResponse;
+  /**  createArtist creates an artist and stores into db  */
+  createArtist: Artist;
   /** Creates invoice for given Lot, can be called by org admin */
   createAuctionLotInvoice: InvoiceDetails;
+  /**  createCategory creates a category and stores into db   */
+  createCategory: Category;
   /** Creates new Check based for provided applicant ID. */
   createCheck: CheckResponse;
+  /** Creates email template record for given orgID and EventType */
+  createEmailTemplate: EmailTemplate;
+  createEnquiry: Scalars['String'];
   createMarketplaceAuctionBid: MarketplaceAuctionBid;
   createMarketplaceAuctionLot: MarketplaceAuctionLot;
   createMarketplaceBuyNowLot: MarketplaceBuyNowOutput;
   createMarketplaceClaimableSet: MarketplaceClaimableOutput;
   createMarketplaceCollection: MarketplaceCollection;
+  /**  createOffer creates an offer for an nft  */
+  createOffer: SignatureResponse;
+  /** createOrUpdateSupportedNetwork mutation creates or updates the supported networks */
+  createOrUpdateSupportedNetwork: SupportedNetwork;
   createOrgByUser: UserOrganization;
   /** Creates a multisig with organization as parent type */
-  createOrgMultisig: Scalars['String'];
+  createOrgMultisig: Wallet;
+  /** Creates pdf template record for given orgID and PDFTemplateType */
+  createPDFTemplate: PdfTemplate;
   /** Creates payment for given Invoice */
   createPayment: PaymentOutput;
   /** Creates new Payment method based on input data. */
   createPaymentMethod: PaymentMethodOutput;
+  /** createSignatureToListNFTForSale creates order and returns a signature to get it signed by owner */
+  createSignatureToListNFTForSale: SignatureResponse;
   createTokenDraft: Scalars['String'];
+  /** Add User */
+  createUser?: Maybe<User>;
   /** Create a new API key for given User and Organization. */
   createUserAPIKey?: Maybe<UserApiKeyResponse>;
-  delayedTransferToken: Scalars['Boolean'];
+  delayedTransferToken: TokenTransfers;
+  /**  deleteArtist soft delete artist with artistId  */
+  deleteArtist: Scalars['Boolean'];
   deleteAsset: Scalars['String'];
+  /**  deleteCategory soft delete category  by categoryID */
+  deleteCategory: Scalars['Boolean'];
   /**
    * Delete an existing lot from User favorite lots list.
    *     If lot has been already deleted, then do nothing.
    *     If provided lot is invalid or not exists, then error message will be returned.
    */
   deleteCollectionItemFromUserFavorites: Scalars['Boolean'];
+  /** deleteNatsMessages is to remove nats streams messages by stream name */
+  deleteNatsMessages: Scalars['Boolean'];
+  deleteOrg: Scalars['Boolean'];
   deleteOrgUser: Scalars['Boolean'];
   /** Deletes existing Payment method by Payment ID. */
   deletePaymentMethod: Scalars['Boolean'];
+  /**  deleteSupportedCountry soft delete supported country with country id  */
+  deleteSupportedCountry: Scalars['Boolean'];
   deleteToken: Scalars['String'];
+  /** Delete user */
+  deleteUser: Scalars['Boolean'];
   /** Delete an existing API key. */
   deleteUserAPIKey: Scalars['Boolean'];
   deleteUserInvitation: Scalars['Boolean'];
   /** Deploy existing multisig wallet to a new network */
-  deployWalletToNetwork: Scalars['String'];
-  /** Generates promo codes for a marketplace item */
-  generatePromoCodes: Array<Maybe<Scalars['String']>>;
+  deployWalletToNetwork: Wallet;
+  /**  estimateTaxAndRoyaltyFee returns estimated tax and royalty fee for an nft  */
+  estimateTaxAndRoyaltyFee: TaxEstimateResponse;
   importExternalTokenToCollection: Scalars['String'];
+  /**  initiateBuyNFT validates the buyer's wallet balance and nft ownership and returns sale details  */
+  initiateBuyNFT: NftSaleDetails;
   /** List Wallets With Token takes contract address as input along with start/end date range and network type. Returns a list of token owners. */
   listWalletsWithToken: Array<Maybe<TokenOwner>>;
   loginWithSignature: SignInResponse;
   marketplaceUpdateTheme: Marketplace;
   mintTokens: Scalars['String'];
   nftContractAddAdmin: Scalars['String'];
+  nftContractExtensionMintBatch: Scalars['String'];
   nftContractExtensionPause: Scalars['String'];
   nftContractExtensionProvenanceMint: Scalars['String'];
+  nftContractExtensionRedeemableRedeemToken: Scalars['String'];
   nftContractExtensionSetBaseURI: Scalars['String'];
   nftContractExtensionSetProvenanceHash: Scalars['String'];
   nftContractExtensionUnpause: Scalars['String'];
@@ -976,28 +1302,52 @@ export type Mutation = {
   nftDeployContract: NftContract;
   orgCreateMarketplace: Marketplace;
   ping: Scalars['String'];
-  /** Redeem a claimable */
-  redeemClaimable: Scalars['Boolean'];
+  processTokenTranfer: TokenTransfers;
   /** Redeem a claimable code */
   redeemClaimableCode: Scalars['Boolean'];
   /** Redeem a claimable */
   redeemClaimableItem: Scalars['Boolean'];
-  /** Redeem a promo code */
-  redeemPromoCode: Scalars['Boolean'];
+  /**  rejectOffer rejects an offer by the token owner  */
+  rejectOffer: Scalars['String'];
   /** Release reservations held by invoice ID */
   releaseReservation: Scalars['Boolean'];
   removeAllowListFromBuyNowLot: Scalars['Boolean'];
+  removeAllowListFromClaimableSet: Scalars['Boolean'];
+  /**  removeListing removes an nft listed for sale  */
+  removeListing: Scalars['String'];
+  /** removeNFTFromFavourite removes the given nft from the favorite list of the user */
+  removeNFTFromFavourite: Scalars['Boolean'];
+  /** Delete and existing record from 'registry' */
+  removeRegistry: Scalars['Boolean'];
+  /** removeSupportedNetwork mutation to remove the supported network by id */
+  removeSupportedNetwork: Scalars['Boolean'];
+  /** Updates the listing status value to InActive from 'registry_tokens' */
+  removeToken: Scalars['Boolean'];
+  /** renameWallet updates the external wallet's name  */
+  renameWallet: Scalars['String'];
   reserveMarketplaceBuyNowLot: MarketplaceBuyNowOutput;
   sendUserInvitation: Scalars['Boolean'];
   setContractRoyalties: Scalars['String'];
   setJwtIssuerDomain: Organization;
   startInvoiceDelivery: Scalars['Boolean'];
+  /**  submitProofOfApproval updates the signature to list an NFT for sale  */
+  submitProofOfApproval: Scalars['String'];
+  /**  submitProofOfOffer updates offer object with buyer signature  */
+  submitProofOfOffer: Scalars['String'];
   /** Transfers a token in the provided wallet to the `transferTo` address */
   transferToken: Scalars['String'];
   updateAfterPaymentTransferSuspendTime: Scalars['Boolean'];
+  updateAllowList: Scalars['Boolean'];
+  updateAllowListValues: AllowList;
   /** Updates existing  Applicant based on input data. */
   updateApplicant: ApplicantResponse;
+  /**  updateArtistById updates artist for given artist id  */
+  updateArtistById: Artist;
   updateBuyNowInvoiceExpiryMins: Scalars['Boolean'];
+  /**  updateCatgegoryById updates category for given category id  */
+  updateCategoryById: Category;
+  /** Updates email_template for given id */
+  updateEmailTemplate: Scalars['Boolean'];
   updateMarketplaceAuctionLot: MarketplaceAuctionLot;
   updateMarketplaceBuyNowLot: MarketplaceBuyNowOutput;
   updateMarketplaceClaimableSet: MarketplaceClaimableOutput;
@@ -1007,8 +1357,11 @@ export type Mutation = {
   /** Update existing Payment method based on input data. */
   updatePaymentMethod: Scalars['Boolean'];
   updateTokenDraft: Scalars['String'];
+  /**  updateTransactionHash fetches the transaction info and updates it to the db  */
+  updateTransactionHash?: Maybe<BuyNowTransactionResponse>;
   updateUserOrgRole: UserOrganization;
   updateUserOrgSettings: UserOrganization;
+  updateWirePaymentExpiration: Scalars['Boolean'];
   uploadArweaveAsset: Scalars['String'];
   uploadArweaveMetadata: Scalars['String'];
   uploadAsset: Scalars['String'];
@@ -1018,9 +1371,22 @@ export type Mutation = {
 };
 
 
+export type MutationAcceptOfferArgs = {
+  orderId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+  transactionHash: Scalars['String'];
+};
+
+
 export type MutationAddAllowListToBuyNowLotArgs = {
   allowListID: Scalars['UUID1'];
   buyNowLotID: Scalars['UUID1'];
+};
+
+
+export type MutationAddAllowListToClaimableSetArgs = {
+  allowListID: Scalars['UUID1'];
+  claimableSetID: Scalars['UUID1'];
 };
 
 
@@ -1035,9 +1401,50 @@ export type MutationAddExistingTokenToCollectionArgs = {
 };
 
 
+export type MutationAddMultisigOwnerArgs = {
+  newAddress: Scalars['String'];
+  walletID: Scalars['UUID1'];
+};
+
+
+export type MutationAddNftToFavouriteArgs = {
+  orgID: Scalars['UUID1'];
+  tokenId: Scalars['UUID1'];
+};
+
+
 export type MutationAddOrganizationArgs = {
   handle: Scalars['String'];
   name: Scalars['String'];
+};
+
+
+export type MutationAddSupportedCountryArgs = {
+  input: SupportedCountryInput;
+  orgId: Scalars['UUID1'];
+};
+
+
+export type MutationAddSupportedCurrencyArgs = {
+  input: SupportedCurrencyInput;
+};
+
+
+export type MutationAddToRegistryArgs = {
+  artistID: Scalars['UUID1'];
+  categoryID: Scalars['UUID1'];
+  contractAddress: Scalars['String'];
+  isAllTokensApproved: Scalars['Boolean'];
+  marketplaceID: Scalars['UUID1'];
+  networkID: Scalars['UUID1'];
+  orgID: Scalars['UUID1'];
+  tokenIDs?: InputMaybe<Array<Scalars['BigInt']>>;
+};
+
+
+export type MutationAddTokenArgs = {
+  input: TokenRequest;
+  orgID: Scalars['UUID1'];
 };
 
 
@@ -1066,6 +1473,12 @@ export type MutationCancelMarketplaceAuctionBidArgs = {
 };
 
 
+export type MutationCancelOfferArgs = {
+  orderId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+};
+
+
 export type MutationCancelPaymentArgs = {
   orgID: Scalars['UUID1'];
   paymentID: Scalars['UUID1'];
@@ -1075,6 +1488,12 @@ export type MutationCancelPaymentArgs = {
 export type MutationCancelTokenTransferArgs = {
   orgID: Scalars['UUID1'];
   tokenTransferID: Scalars['UUID1'];
+};
+
+
+export type MutationChangePasswordArgs = {
+  orgID: Scalars['UUID1'];
+  userID: Scalars['UUID1'];
 };
 
 
@@ -1094,6 +1513,15 @@ export type MutationCheckWalletTokensArgs = {
 };
 
 
+export type MutationConnectExternalWalletArgs = {
+  address: Scalars['String'];
+  message: Scalars['String'];
+  networkID: Scalars['UUID1'];
+  orgID: Scalars['UUID1'];
+  signature: Scalars['String'];
+};
+
+
 export type MutationCreateAllowListArgs = {
   allowListInput: AllowListInput;
   orgID: Scalars['UUID1'];
@@ -1106,14 +1534,39 @@ export type MutationCreateApplicantArgs = {
 };
 
 
+export type MutationCreateArtistArgs = {
+  input: ArtistInput;
+};
+
+
 export type MutationCreateAuctionLotInvoiceArgs = {
   lotID: Scalars['UUID1'];
   orgID: Scalars['UUID1'];
 };
 
 
+export type MutationCreateCategoryArgs = {
+  input: CategoryInput;
+};
+
+
 export type MutationCreateCheckArgs = {
   applicantID: Scalars['String'];
+};
+
+
+export type MutationCreateEmailTemplateArgs = {
+  input: CreateEmailTemplateInput;
+};
+
+
+export type MutationCreateEnquiryArgs = {
+  contractAddress: Scalars['String'];
+  networkId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+  quantity: Scalars['Int'];
+  tokenId: Scalars['BigInt'];
+  tokenType: TokenType;
 };
 
 
@@ -1143,6 +1596,29 @@ export type MutationCreateMarketplaceCollectionArgs = {
 };
 
 
+export type MutationCreateOfferArgs = {
+  buyerAddress: Scalars['String'];
+  country?: InputMaybe<Scalars['String']>;
+  currencyId?: InputMaybe<Scalars['UUID1']>;
+  expiryDate: Scalars['Time'];
+  nftTokenId: Scalars['UUID1'];
+  offerPrice: Scalars['Float'];
+  orgId: Scalars['UUID1'];
+  paymentToken: Scalars['String'];
+  postalCode?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationCreateOrUpdateSupportedNetworkArgs = {
+  defaultPaymentCurrencyID?: InputMaybe<Scalars['UUID1']>;
+  isBuyNowEnabled: Scalars['Boolean'];
+  isMakeOfferEnabled: Scalars['Boolean'];
+  networkId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+  secondaryMarketplaceContractAddress: Scalars['String'];
+};
+
+
 export type MutationCreateOrgByUserArgs = {
   handle: Scalars['String'];
   name: Scalars['String'];
@@ -1153,6 +1629,11 @@ export type MutationCreateOrgMultisigArgs = {
   chainId: Scalars['Int'];
   name: Scalars['String'];
   orgId: Scalars['UUID1'];
+};
+
+
+export type MutationCreatePdfTemplateArgs = {
+  input: CreatePdfTemplateInput;
 };
 
 
@@ -1169,9 +1650,30 @@ export type MutationCreatePaymentMethodArgs = {
 };
 
 
+export type MutationCreateSignatureToListNftForSaleArgs = {
+  currencyId: Scalars['UUID1'];
+  fixedPrice: Scalars['Float'];
+  nftOwnerAddress: Scalars['String'];
+  nftTokenId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+  paymentToken: Scalars['String'];
+  quantity: Scalars['Int'];
+  tokenType: TokenType;
+};
+
+
 export type MutationCreateTokenDraftArgs = {
   contractId: Scalars['UUID1'];
   tokens: Array<TokenDraft>;
+};
+
+
+export type MutationCreateUserArgs = {
+  email?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+  orgID: Scalars['UUID1'];
+  role: Scalars['String'];
+  walletAddress?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -1190,13 +1692,38 @@ export type MutationDelayedTransferTokenArgs = {
 };
 
 
+export type MutationDeleteArtistArgs = {
+  artistId: Scalars['UUID1'];
+  marketplaceId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+};
+
+
 export type MutationDeleteAssetArgs = {
   assetId: Scalars['UUID1'];
 };
 
 
+export type MutationDeleteCategoryArgs = {
+  categoryID: Scalars['UUID1'];
+  marketplaceId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+};
+
+
 export type MutationDeleteCollectionItemFromUserFavoritesArgs = {
   collectionItemId: Scalars['UUID1'];
+};
+
+
+export type MutationDeleteNatsMessagesArgs = {
+  orgId: Scalars['UUID1'];
+  streamName: NatsStreamNames;
+};
+
+
+export type MutationDeleteOrgArgs = {
+  orgID: Scalars['UUID1'];
 };
 
 
@@ -1212,8 +1739,19 @@ export type MutationDeletePaymentMethodArgs = {
 };
 
 
+export type MutationDeleteSupportedCountryArgs = {
+  countryId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+};
+
+
 export type MutationDeleteTokenArgs = {
   tokenId: Scalars['UUID1'];
+};
+
+
+export type MutationDeleteUserArgs = {
+  userId: Scalars['UUID1'];
 };
 
 
@@ -1234,9 +1772,14 @@ export type MutationDeployWalletToNetworkArgs = {
 };
 
 
-export type MutationGeneratePromoCodesArgs = {
-  marketplaceCollectionItemId: Scalars['UUID1'];
-  num: Scalars['Int'];
+export type MutationEstimateTaxAndRoyaltyFeeArgs = {
+  country?: InputMaybe<Scalars['String']>;
+  estimateType: TaxEstimateType;
+  nftTokenId?: InputMaybe<Scalars['UUID1']>;
+  orderId?: InputMaybe<Scalars['UUID1']>;
+  orgId: Scalars['UUID1'];
+  postalCode?: InputMaybe<Scalars['String']>;
+  price?: InputMaybe<Scalars['Float']>;
 };
 
 
@@ -1244,6 +1787,16 @@ export type MutationImportExternalTokenToCollectionArgs = {
   contractAddress: Scalars['String'];
   marketplaceId: Scalars['UUID1'];
   onChainId: Scalars['Int'];
+};
+
+
+export type MutationInitiateBuyNftArgs = {
+  buyerAddress: Scalars['String'];
+  country?: InputMaybe<Scalars['String']>;
+  currencyId?: InputMaybe<Scalars['UUID1']>;
+  nftTokenId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+  postalCode?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -1278,6 +1831,14 @@ export type MutationNftContractAddAdminArgs = {
 };
 
 
+export type MutationNftContractExtensionMintBatchArgs = {
+  amountToMint: Scalars['Int'];
+  extensionAddress: Scalars['String'];
+  mintToAddress: Scalars['String'];
+  nftContractId: Scalars['UUID1'];
+};
+
+
 export type MutationNftContractExtensionPauseArgs = {
   extensionAddress: Scalars['String'];
   nftContractId: Scalars['UUID1'];
@@ -1290,6 +1851,13 @@ export type MutationNftContractExtensionProvenanceMintArgs = {
   mintToAddress: Scalars['String'];
   numberOfTokens: Scalars['Int'];
   voucherId: Scalars['UUID1'];
+};
+
+
+export type MutationNftContractExtensionRedeemableRedeemTokenArgs = {
+  extensionAddress: Scalars['String'];
+  nftContractId: Scalars['UUID1'];
+  tokenId: Scalars['Int'];
 };
 
 
@@ -1338,9 +1906,9 @@ export type MutationOrgCreateMarketplaceArgs = {
 };
 
 
-export type MutationRedeemClaimableArgs = {
-  claimableId: Scalars['String'];
-  destAddr?: InputMaybe<Scalars['String']>;
+export type MutationProcessTokenTranferArgs = {
+  orgID: Scalars['UUID1'];
+  tokenTransferID: Scalars['UUID1'];
 };
 
 
@@ -1356,9 +1924,9 @@ export type MutationRedeemClaimableItemArgs = {
 };
 
 
-export type MutationRedeemPromoCodeArgs = {
-  code: Scalars['String'];
-  destAddr?: InputMaybe<Scalars['String']>;
+export type MutationRejectOfferArgs = {
+  orderId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
 };
 
 
@@ -1370,6 +1938,47 @@ export type MutationReleaseReservationArgs = {
 
 export type MutationRemoveAllowListFromBuyNowLotArgs = {
   buyNowLotID: Scalars['UUID1'];
+};
+
+
+export type MutationRemoveAllowListFromClaimableSetArgs = {
+  claimableSetID: Scalars['UUID1'];
+};
+
+
+export type MutationRemoveListingArgs = {
+  nftTokenId: Scalars['UUID1'];
+  orgID: Scalars['UUID1'];
+};
+
+
+export type MutationRemoveNftFromFavouriteArgs = {
+  orgID: Scalars['UUID1'];
+  tokenId: Scalars['UUID1'];
+};
+
+
+export type MutationRemoveRegistryArgs = {
+  orgID: Scalars['UUID1'];
+  registryID: Scalars['UUID1'];
+};
+
+
+export type MutationRemoveSupportedNetworkArgs = {
+  id: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+};
+
+
+export type MutationRemoveTokenArgs = {
+  orgID: Scalars['UUID1'];
+  registryTokenIDs?: InputMaybe<Array<Scalars['UUID1']>>;
+};
+
+
+export type MutationRenameWalletArgs = {
+  name: Scalars['String'];
+  walletID: Scalars['UUID1'];
 };
 
 
@@ -1403,6 +2012,20 @@ export type MutationStartInvoiceDeliveryArgs = {
 };
 
 
+export type MutationSubmitProofOfApprovalArgs = {
+  nftTokenId: Scalars['UUID1'];
+  orgID: Scalars['UUID1'];
+  signature: Scalars['String'];
+};
+
+
+export type MutationSubmitProofOfOfferArgs = {
+  orderId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+  signature: Scalars['String'];
+};
+
+
 export type MutationTransferTokenArgs = {
   amount?: InputMaybe<Scalars['Int']>;
   contractAddress: Scalars['String'];
@@ -1419,15 +2042,50 @@ export type MutationUpdateAfterPaymentTransferSuspendTimeArgs = {
 };
 
 
+export type MutationUpdateAllowListArgs = {
+  allowListID: Scalars['UUID1'];
+  elementsToAdd?: InputMaybe<Array<Scalars['String']>>;
+  elementsToRemove?: InputMaybe<Array<Scalars['String']>>;
+  endTime?: InputMaybe<Scalars['Time']>;
+  orgID: Scalars['UUID1'];
+  startTime?: InputMaybe<Scalars['Time']>;
+};
+
+
+export type MutationUpdateAllowListValuesArgs = {
+  allowListID: Scalars['UUID1'];
+  input: AllowListRequest;
+  orgID: Scalars['UUID1'];
+};
+
+
 export type MutationUpdateApplicantArgs = {
   applicantID: Scalars['String'];
   input: ApplicantRequest;
 };
 
 
+export type MutationUpdateArtistByIdArgs = {
+  artistId: Scalars['UUID1'];
+  input: ArtistInput;
+};
+
+
 export type MutationUpdateBuyNowInvoiceExpiryMinsArgs = {
   buyNowInvoiceExpiryMins: Scalars['Int'];
   orgID: Scalars['UUID1'];
+};
+
+
+export type MutationUpdateCategoryByIdArgs = {
+  categoryID: Scalars['UUID1'];
+  input: CategoryInput;
+};
+
+
+export type MutationUpdateEmailTemplateArgs = {
+  id: Scalars['UUID1'];
+  input: CreateEmailTemplateInput;
 };
 
 
@@ -1473,6 +2131,14 @@ export type MutationUpdateTokenDraftArgs = {
 };
 
 
+export type MutationUpdateTransactionHashArgs = {
+  buyerAddress: Scalars['String'];
+  nftTokenId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+  transactionHash: Scalars['String'];
+};
+
+
 export type MutationUpdateUserOrgRoleArgs = {
   orgID: Scalars['UUID'];
   role: Scalars['String'];
@@ -1482,6 +2148,13 @@ export type MutationUpdateUserOrgRoleArgs = {
 
 export type MutationUpdateUserOrgSettingsArgs = {
   params: SettingsInput;
+};
+
+
+export type MutationUpdateWirePaymentExpirationArgs = {
+  marketplaceID: Scalars['UUID1'];
+  orgID: Scalars['UUID1'];
+  wirePaymentExpirationDays: Scalars['Int'];
 };
 
 
@@ -1538,6 +2211,62 @@ export type NftContractType = {
   name: Scalars['String'];
 };
 
+export enum NftCurrencyType {
+  Crypto = 'CRYPTO',
+  Fiat = 'FIAT'
+}
+
+export type NftDetails = {
+  __typename?: 'NFTDetails';
+  artist?: Maybe<Artist>;
+  balance?: Maybe<Scalars['Int']>;
+  category?: Maybe<Category>;
+  contractAddress: Scalars['String'];
+  contractName?: Maybe<Scalars['String']>;
+  editions?: Maybe<Scalars['Int']>;
+  isBuyNowEnabled?: Maybe<Scalars['Boolean']>;
+  isFavorite?: Maybe<Scalars['Boolean']>;
+  isMakeOfferEnabled?: Maybe<Scalars['Boolean']>;
+  listedOrderInfo?: Maybe<Order>;
+  metadata?: Maybe<Erc721Metadata>;
+  mintedAt?: Maybe<Scalars['Time']>;
+  network?: Maybe<Scalars['String']>;
+  networkID?: Maybe<Scalars['UUID1']>;
+  nftTokenId?: Maybe<Scalars['UUID1']>;
+  owner?: Maybe<Scalars['String']>;
+  ownerAddress?: Maybe<Scalars['String']>;
+  price: Array<Maybe<NftPrice>>;
+  qty?: Maybe<Scalars['Int']>;
+  status?: Maybe<TokenStatus>;
+  tokenId: Scalars['BigInt'];
+  tokenOwnerAddress?: Maybe<Scalars['String']>;
+  tokenOwnerAvatar?: Maybe<Scalars['String']>;
+  tokenOwnerUsername?: Maybe<Scalars['String']>;
+  tokenType?: Maybe<TokenType>;
+  tokenURI?: Maybe<Scalars['String']>;
+};
+
+/** NFT transaction history object */
+export type NftHistory = {
+  __typename?: 'NFTHistory';
+  asset?: Maybe<Scalars['String']>;
+  blockNum?: Maybe<Scalars['Int']>;
+  blockTimestamp?: Maybe<Scalars['Time']>;
+  category?: Maybe<Scalars['String']>;
+  erc1155Metadata?: Maybe<Array<Maybe<Erc1155Metadata>>>;
+  eventType: NftTxEventType;
+  from?: Maybe<Scalars['String']>;
+  fromUserAvatar?: Maybe<Scalars['String']>;
+  fromUserName?: Maybe<Scalars['String']>;
+  hash?: Maybe<Scalars['String']>;
+  price?: Maybe<Array<Maybe<NftPrice>>>;
+  to?: Maybe<Scalars['String']>;
+  toUserAvatar?: Maybe<Scalars['String']>;
+  toUserName?: Maybe<Scalars['String']>;
+  tokenId?: Maybe<Scalars['Int']>;
+  value?: Maybe<Scalars['Int']>;
+};
+
 export type NftMetadata = {
   __typename?: 'NFTMetadata';
   copyright?: Maybe<Scalars['String']>;
@@ -1545,6 +2274,25 @@ export type NftMetadata = {
   externalUrl?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
+};
+
+export enum NftOrderType {
+  Listing = 'LISTING',
+  Offer = 'OFFER'
+}
+
+export type NftPrice = {
+  __typename?: 'NFTPrice';
+  type: NftCurrencyType;
+  unit: Scalars['String'];
+  value: Scalars['Float'];
+};
+
+export type NftSaleDetails = {
+  __typename?: 'NFTSaleDetails';
+  Network?: Maybe<Network>;
+  order: Order;
+  proofOfApproval: Scalars['String'];
 };
 
 export type NftToken = {
@@ -1563,14 +2311,52 @@ export type NftToken = {
   nftContractID: Scalars['UUID1'];
   onChainId?: Maybe<Scalars['Int']>;
   royaltyBasisPoints?: Maybe<Scalars['Int']>;
+  tokenMetadata?: Maybe<Erc721Metadata>;
 };
+
+export type NftTraitRarity = {
+  __typename?: 'NFTTraitRarity';
+  displayType?: Maybe<Scalars['String']>;
+  maxValue?: Maybe<Scalars['Int']>;
+  prevalance: Scalars['Float'];
+  traitType: Scalars['String'];
+  value: AttributeValue;
+};
+
+export enum NftTxEventType {
+  Expired = 'Expired',
+  List = 'List',
+  ListRemoved = 'List_Removed',
+  Minted = 'Minted',
+  Offer = 'Offer',
+  OfferCancelled = 'Offer_Cancelled',
+  OfferRejected = 'Offer_Rejected',
+  OfferSold = 'Offer_Sold',
+  Sale = 'Sale',
+  Transfer = 'Transfer'
+}
+
+export enum NatsStreamNames {
+  Barback = 'BARBACK',
+  Bids = 'BIDS',
+  Invoices = 'INVOICES',
+  Lots = 'LOTS',
+  Payments = 'PAYMENTS',
+  TransactionalEvents = 'TRANSACTIONAL_EVENTS',
+  Users = 'USERS',
+  Wallets = 'WALLETS'
+}
 
 export type Network = {
   __typename?: 'Network';
   chainID: Scalars['Int'];
+  defaultCurrency: Scalars['String'];
   id: Scalars['UUID1'];
+  isTestnet: Scalars['Boolean'];
   name: Scalars['String'];
+  nftAPIURL: Scalars['String'];
   openSeaProxyAddress: Scalars['String'];
+  paymentCurrency: Scalars['String'];
   rpcURL: Scalars['String'];
   safeFactoryAddress: Scalars['String'];
   safeFallbackHandler: Scalars['String'];
@@ -1578,18 +2364,96 @@ export type Network = {
   wethAddress: Scalars['String'];
 };
 
+export type Order = {
+  __typename?: 'Order';
+  buyerAddress: Scalars['String'];
+  buyerCurrency?: Maybe<SupportedCurrency>;
+  buyerCurrencyId?: Maybe<Scalars['UUID1']>;
+  buyerTax?: Maybe<Scalars['Float']>;
+  createdAt: Scalars['Time'];
+  createdBy?: Maybe<User>;
+  createdByUserId?: Maybe<Scalars['UUID1']>;
+  fixedPrice: Scalars['Float'];
+  id: Scalars['UUID1'];
+  listedCurrency?: Maybe<SupportedCurrency>;
+  listedCurrencyId?: Maybe<Scalars['UUID1']>;
+  nftOwnerAddress: Scalars['String'];
+  nftToken?: Maybe<NftToken>;
+  nftTokenId: Scalars['UUID1'];
+  offerExpiryDate: Scalars['Time'];
+  orderStatus?: Maybe<OrderStatus>;
+  orderType: NftOrderType;
+  paymentToken: Scalars['String'];
+  price: Array<Maybe<NftPrice>>;
+  quantity: Scalars['Int'];
+  tokenContract: Scalars['String'];
+  tokenId: Scalars['String'];
+  tokenType: TokenType;
+  updatedAt: Scalars['Time'];
+};
+
+export type OrderActivity = {
+  __typename?: 'OrderActivity';
+  ActivityName: ActivityName;
+  ContractAddress: Scalars['String'];
+  ContractName: Scalars['String'];
+  CreatedAt?: Maybe<Scalars['Time']>;
+  FromUserAvatar?: Maybe<Scalars['String']>;
+  FromUserName?: Maybe<Scalars['String']>;
+  FromWallet?: Maybe<Wallet>;
+  ID: Scalars['UUID1'];
+  InvoiceID?: Maybe<Scalars['UUID1']>;
+  InvoiceURL?: Maybe<Scalars['String']>;
+  NFTTokenID?: Maybe<Scalars['UUID1']>;
+  NetworkID: Scalars['UUID1'];
+  Price?: Maybe<Array<NftPrice>>;
+  Status?: Maybe<OrderStatus>;
+  ToUserAvatar?: Maybe<Scalars['String']>;
+  ToUserName?: Maybe<Scalars['String']>;
+  ToWallet?: Maybe<Wallet>;
+  TokenID: Scalars['BigInt'];
+  TokenName: Scalars['String'];
+  TransactionHash?: Maybe<Scalars['String']>;
+};
+
+export enum OrderActivityFilters {
+  LatestToOldest = 'LATEST_TO_OLDEST',
+  OldestToLatest = 'OLDEST_TO_LATEST'
+}
+
+export type OrderActivityResponse = {
+  __typename?: 'OrderActivityResponse';
+  data: Array<OrderActivity>;
+  totalCount: Scalars['Int'];
+};
+
+export enum OrderStatus {
+  Cancelled = 'CANCELLED',
+  Completed = 'COMPLETED',
+  Expired = 'EXPIRED',
+  Failed = 'FAILED',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED',
+  Removed = 'REMOVED'
+}
+
 export type Organization = {
   __typename?: 'Organization';
   afterPaymentTransferSuspendTime?: Maybe<Scalars['Int']>;
   assets?: Maybe<Array<Asset>>;
   buyNowInvoiceExpiryMins?: Maybe<Scalars['Int']>;
+  createdAt: Scalars['Time'];
   handle: Scalars['String'];
   id: Scalars['UUID1'];
   jwtIssuerDomain?: Maybe<Scalars['String']>;
   marketplaces: Array<Marketplace>;
   members: Array<OrganizationMember>;
+  mor?: Maybe<Scalars['Boolean']>;
   name: Scalars['String'];
   nftContracts?: Maybe<Array<NftContract>>;
+  notes?: Maybe<Scalars['String']>;
+  purchaseLimitWithoutKYC?: Maybe<Scalars['Float']>;
+  totalUsers?: Maybe<Scalars['BigInt']>;
   wallets?: Maybe<Array<Wallet>>;
 };
 
@@ -1605,26 +2469,78 @@ export type OrganizationMembersArgs = {
   offset?: InputMaybe<Scalars['Int']>;
 };
 
+export type OrganizationData = {
+  __typename?: 'OrganizationData';
+  data: Array<Maybe<Organization>>;
+  pagination: Pagination;
+};
+
 export type OrganizationMember = {
   __typename?: 'OrganizationMember';
+  KycStatus?: Maybe<KycStatus>;
+  createdAt?: Maybe<Scalars['Time']>;
   email?: Maybe<Scalars['String']>;
   externalId: Scalars['String'];
   id: Scalars['UUID1'];
   name?: Maybe<Scalars['String']>;
   organizationId: Scalars['UUID1'];
   role?: Maybe<Scalars['String']>;
+  totalCount?: Maybe<Scalars['Int']>;
   userId: Scalars['UUID1'];
   username?: Maybe<Scalars['String']>;
+  walletAddress?: Maybe<Scalars['String']>;
 };
 
 export type OrganizationMemberFilter = {
   externalUserId?: InputMaybe<Scalars['String']>;
 };
 
+export type OrganizationUserList = {
+  __typename?: 'OrganizationUserList';
+  pagination: Pagination;
+  users: Array<Maybe<OrganizationMember>>;
+};
+
+export type OwnedTokens = {
+  __typename?: 'OwnedTokens';
+  requestObj?: Maybe<OwnedTokensMetadata>;
+  tokens?: Maybe<Array<Maybe<WalletToken>>>;
+};
+
+export type OwnedTokensMetadata = {
+  __typename?: 'OwnedTokensMetadata';
+  count?: Maybe<Scalars['Int']>;
+  networkID?: Maybe<Scalars['UUID1']>;
+  nextPageKey?: Maybe<Scalars['String']>;
+  prevPageKey?: Maybe<Scalars['String']>;
+  totalCount?: Maybe<Scalars['Int']>;
+};
+
+export type Owners = {
+  __typename?: 'Owners';
+  Owners?: Maybe<Array<Scalars['String']>>;
+};
+
+export type PdfTemplate = {
+  __typename?: 'PDFTemplate';
+  active: Scalars['Boolean'];
+  id: Scalars['UUID1'];
+  organization: Organization;
+  organizationID: Scalars['UUID1'];
+  pdfTemplateType: EventType;
+  templateContent: Scalars['String'];
+};
+
 export type PaginatedMarketplaceClaimableCodeOutput = {
   __typename?: 'PaginatedMarketplaceClaimableCodeOutput';
   count?: Maybe<Scalars['Int']>;
   results: Array<MarketplaceClaimableCodeOutput>;
+};
+
+export type Pagination = {
+  __typename?: 'Pagination';
+  offset: Scalars['Int'];
+  totalCount: Scalars['BigInt'];
 };
 
 export type Payment = {
@@ -1637,7 +2553,7 @@ export type Payment = {
   userID: Scalars['UUID1'];
 };
 
-export type PaymentDetails = CryptoPaymentDetails;
+export type PaymentDetails = CryptoPaymentDetails | WirePaymentDetails;
 
 export type PaymentMethodCreateInput = {
   achData?: InputMaybe<AchData>;
@@ -1688,10 +2604,17 @@ export type PaymentPublicKey = {
 
 export enum PaymentStatus {
   ActionRequired = 'action_required',
+  Chargeback = 'chargeback',
   Confirmed = 'confirmed',
   Failed = 'failed',
   Paid = 'paid',
   Pending = 'pending'
+}
+
+export enum PaymentSubStatus {
+  Overpaid = 'overpaid',
+  Paid = 'paid',
+  Underpaid = 'underpaid'
 }
 
 export enum PaymentType {
@@ -1706,24 +2629,41 @@ export type Query = {
   /** Returns Invoice Item after applying the Discount */
   applyDiscountCode: DiscountedInvoiceItem;
   availableClaimables: Scalars['Int'];
-  /** Check if user can redeem claimable */
-  canRedeemClaimable: Scalars['Boolean'];
   /** Check if user can redeem claimable item */
   canRedeemClaimableItem: Scalars['Boolean'];
+  /** Performs card screening and returns risk score */
+  cardScreening: CardResponse;
   collection?: Maybe<MarketplaceCollection>;
   collectionBySlug?: Maybe<MarketplaceCollection>;
   collectionItemById?: Maybe<MarketplaceCollectionItem>;
+  /**  Get wallet content from Alchemy  */
+  getActiveWalletsContent: OwnedTokens;
+  /** Retrieves all registry_tokens details by organizationID and owner address */
+  getAllRegistryTokens: RegistryTokensResponse;
+  /** Retrieves all registry_tokens details by organizationID and user */
+  getAllRegistryTokensByUser: RegistryTokensResponse;
+  getAllowList: AllowList;
   getAllowLists?: Maybe<Array<AllowList>>;
   /** Retrieves applicant details by organizationID */
   getApplicant: ApplicantResponse;
-  /** Get Available Claimables */
-  getAvailableClaimables: Scalars['Int'];
+  /** getArtistById returns artist by artistId */
+  getArtistById: Artist;
+  /**  getArtists gets list of artists   */
+  getArtists: ArtistResponse;
   getBuyNowBuyerInfo?: Maybe<Array<BuyerDetailOutput>>;
+  /**  getCategories gets the list of categories  */
+  getCategories: CategoryResponse;
+  /**  getCategoryById returns category by categoryId  */
+  getCategoryById: Category;
   getClaimableCodesForSetId: PaginatedMarketplaceClaimableCodeOutput;
   /** Retrieves Discount codes by Invoice Item ID */
   getDiscountCodes: Array<Maybe<DiscountCode>>;
+  /** Retrieves email templates for organizationID and filters by eventType if provided  */
+  getEmailTemplateByOrgIDAndEventType: Array<Maybe<EmailTemplate>>;
   /** Retrieves invoice details by ID */
   getInvoiceDetails: InvoiceDetails;
+  /**  getInvoiceURL returns signed url of invoice for given invoice ID  */
+  getInvoiceURL: Scalars['String'];
   /** Retrieves invoice list for given user, can be called by org admin */
   getInvoicesByUserID: Array<Maybe<InvoiceDetails>>;
   getMarketplaceAuctionLot: MarketplaceAuctionLot;
@@ -1731,6 +2671,20 @@ export type Query = {
   getMyInvoices: Array<Maybe<InvoiceDetails>>;
   /** Retrieves payments user owns */
   getMyPayments: Array<Maybe<Payment>>;
+  /**  getNFTAttributesRarity returns rarity of traits for given token  */
+  getNFTAttributesRarity?: Maybe<Array<NftTraitRarity>>;
+  /**  getNFTDetails returns NFT details for given contractAddress & onChainTokenID  */
+  getNFTDetails: NftDetails;
+  /**  getNFTDetailsByTokenId returns nft details for given nftTokenId  */
+  getNFTDetailsByTokenId: NftDetails;
+  /** getNFTFavouriteListByUser returns the user's favorite nft list  */
+  getNFTFavouriteListByUser: FavoriteNftResponse;
+  /**  getNFTHistory returns the history of an NFT  */
+  getNFTHistory: Array<Maybe<NftHistory>>;
+  /**  getOffers returns valid offers available for an nft  */
+  getOffers?: Maybe<Array<Order>>;
+  /** Retrieves PDF templates for organizationID and filters by PDFTemplateType if provided  */
+  getPDFTemplateByOrgIDAndEventType: PdfTemplate;
   /** Returns requested Payment method */
   getPaymentMethod: PaymentMethodOutput;
   /** Returns Payment method list in scope of current Organization. */
@@ -1741,20 +2695,47 @@ export type Query = {
   getPaymentPublicKey: PaymentPublicKey;
   /** Retrieves payment list for given user, can be called by org admin */
   getPaymentsByUserID: Array<Maybe<Payment>>;
+  /** Retrieves registry details by organizationID */
+  getRegistries: RegistryResponse;
   /** Retrieves sdk token to inititate onfido web SDK */
   getSDKToken: SdkTokenResponse;
-  /**  getSignatureMessage returns a message that should be used for in signing process */
+  /**  getSignatureForOfferApproval validate token ownership and returns signature for approval  */
+  getSignatureForOfferApproval: NftSaleDetails;
+  /** getSignatureMessage returns a message that should be used for in signing process */
   getSignatureMessage: Scalars['String'];
+  /**  getSupportedCountries gets list of supported countries */
+  getSupportedCountries: Array<Maybe<SupportedCountry>>;
+  /**  getSupportedCurrencies returns list of supported currencies  */
+  getSupportedCurrencies?: Maybe<Array<SupportedCurrency>>;
+  /**  getSupportedCurrenciesByOrganization returns list of supported currencies against the organization */
+  getSupportedCurrenciesByOrganization?: Maybe<Array<SupportedCurrency>>;
+  /**  getSupportedNetworks returns list of supported networks  */
+  getSupportedNetworks?: Maybe<Array<Network>>;
+  /**  getSupportedNetworksByOrganization returns list of supported networks by organization */
+  getSupportedNetworksByOrganization?: Maybe<Array<SupportedNetwork>>;
   /** Get Tax Quote */
   getTaxQuote: TaxQuoteOutput;
   getTokenTransfersHistory: Array<TokenTransfers>;
+  /** Retrieves registry_tokenss details by organizationID and registryID */
+  getTokensInRegistry: RegistryTokensResponse;
+  /**  getUSDPrice returns conversion rate to USD for provided currency  */
+  getUSDPrice: GetUsdPriceResponse;
   /** Get User by wallet address and orgID */
   getUserByWalletAddress?: Maybe<User>;
   /** Get UserInvitations by orgID */
   getUserInvitations: Array<Maybe<UserInvitation>>;
+  /**  getUserOrderActivity returns order activities for user  */
+  getUserOrderActivity?: Maybe<OrderActivityResponse>;
   getWalletDeliveryCount: Scalars['Int'];
   internalUsers: Array<UserOrganization>;
+  isTokenRedeemed: Scalars['Boolean'];
   isUserOnAllowList: Scalars['Boolean'];
+  isUserOnClaimableSetsAllowList: Scalars['Boolean'];
+  /** Get Users list (by org id: optional) */
+  listMintUsers?: Maybe<UserList>;
+  /** Get Users list from Organization by orgID */
+  listOrgCustomer?: Maybe<OrganizationUserList>;
+  listOrganizations: OrganizationData;
   /** create invoice/lot report by collectionID and mails  to provided email */
   mailInvoiceLotDetailReportMailByCollectionID: Scalars['Boolean'];
   /** create salesreport by collectionID and mails to provided email */
@@ -1771,9 +2752,12 @@ export type Query = {
   /** Prepare requested Payment method for further use */
   preparePaymentMethod?: Maybe<PaymentMethodPrepareStatementOutput>;
   serverTime: Scalars['Time'];
+  /**  tokenOwners returns the list of token owners */
+  tokenOwners: Array<Maybe<TokenOwnersResponse>>;
   validateIp: ValidateIpResponse;
   /** Validate Payment limit */
   validatePaymentLimit: ValidatePaymentLimitOutput;
+  validateTokenTransfer: Scalars['Boolean'];
   wallet: Wallet;
 };
 
@@ -1789,13 +2773,15 @@ export type QueryAvailableClaimablesArgs = {
 };
 
 
-export type QueryCanRedeemClaimableArgs = {
-  claimableID: Scalars['String'];
+export type QueryCanRedeemClaimableItemArgs = {
+  claimableItemID: Scalars['UUID1'];
+  destAddr?: InputMaybe<Scalars['String']>;
 };
 
 
-export type QueryCanRedeemClaimableItemArgs = {
-  claimableItemID: Scalars['UUID1'];
+export type QueryCardScreeningArgs = {
+  input: CardScreeningInput;
+  orgID: Scalars['UUID1'];
 };
 
 
@@ -1815,6 +2801,48 @@ export type QueryCollectionItemByIdArgs = {
 };
 
 
+export type QueryGetActiveWalletsContentArgs = {
+  filters?: InputMaybe<ActiveWalletFilterInput>;
+  networkId: Scalars['UUID1'];
+  nextPageKey?: InputMaybe<Scalars['String']>;
+  orgID: Scalars['UUID1'];
+  walletAddress: Scalars['String'];
+};
+
+
+export type QueryGetAllRegistryTokensArgs = {
+  categoryID?: InputMaybe<Scalars['UUID1']>;
+  filters?: InputMaybe<RegistryTokenFilterInput>;
+  limit?: InputMaybe<Scalars['Int']>;
+  marketplaceID?: InputMaybe<Scalars['UUID1']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  orgID: Scalars['UUID1'];
+  owner?: InputMaybe<Scalars['String']>;
+  searchKey?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<RegistryTokenSortInput>;
+  status?: InputMaybe<TokenStatus>;
+};
+
+
+export type QueryGetAllRegistryTokensByUserArgs = {
+  categoryID?: InputMaybe<Scalars['UUID1']>;
+  filters?: InputMaybe<RegistryTokenFilterInput>;
+  limit?: InputMaybe<Scalars['Int']>;
+  marketplaceID?: InputMaybe<Scalars['UUID1']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  orgID: Scalars['UUID1'];
+  searchKey?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<RegistryTokenSortInput>;
+  status?: InputMaybe<TokenStatus>;
+};
+
+
+export type QueryGetAllowListArgs = {
+  allowListID: Scalars['UUID1'];
+  orgID: Scalars['UUID1'];
+};
+
+
 export type QueryGetAllowListsArgs = {
   orgID: Scalars['UUID1'];
 };
@@ -1825,13 +2853,42 @@ export type QueryGetApplicantArgs = {
 };
 
 
-export type QueryGetAvailableClaimablesArgs = {
-  claimableId: Scalars['String'];
+export type QueryGetArtistByIdArgs = {
+  artistId: Scalars['UUID1'];
+  marketplaceId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+};
+
+
+export type QueryGetArtistsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  marketplaceId: Scalars['UUID1'];
+  offset?: InputMaybe<Scalars['Int']>;
+  orgId: Scalars['UUID1'];
+  searchKey?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<SortInput>;
 };
 
 
 export type QueryGetBuyNowBuyerInfoArgs = {
   itemId: Scalars['UUID1'];
+};
+
+
+export type QueryGetCategoriesArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  marketplaceId: Scalars['UUID1'];
+  offset?: InputMaybe<Scalars['Int']>;
+  orgId: Scalars['UUID1'];
+  searchKey?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<CategorySortInput>;
+};
+
+
+export type QueryGetCategoryByIdArgs = {
+  categoryID: Scalars['UUID1'];
+  marketplaceId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
 };
 
 
@@ -1847,7 +2904,18 @@ export type QueryGetDiscountCodesArgs = {
 };
 
 
+export type QueryGetEmailTemplateByOrgIdAndEventTypeArgs = {
+  eventType?: InputMaybe<EventType>;
+  orgID: Scalars['UUID1'];
+};
+
+
 export type QueryGetInvoiceDetailsArgs = {
+  invoiceID: Scalars['UUID1'];
+};
+
+
+export type QueryGetInvoiceUrlArgs = {
   invoiceID: Scalars['UUID1'];
 };
 
@@ -1860,6 +2928,65 @@ export type QueryGetInvoicesByUserIdArgs = {
 
 export type QueryGetMarketplaceAuctionLotArgs = {
   marketplaceAuctionLotId: Scalars['UUID'];
+};
+
+
+export type QueryGetMyInvoicesArgs = {
+  returnAllStatuses?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type QueryGetNftAttributesRarityArgs = {
+  contractAddress: Scalars['String'];
+  networkID: Scalars['UUID1'];
+  tokenID: Scalars['BigInt'];
+};
+
+
+export type QueryGetNftDetailsArgs = {
+  contractAddress?: InputMaybe<Scalars['String']>;
+  networkId?: InputMaybe<Scalars['UUID1']>;
+  nftTokenId?: InputMaybe<Scalars['UUID1']>;
+  onChainTokenID?: InputMaybe<Scalars['BigInt']>;
+  orgId: Scalars['UUID1'];
+};
+
+
+export type QueryGetNftDetailsByTokenIdArgs = {
+  nftTokenId: Scalars['UUID1'];
+  orgId?: InputMaybe<Scalars['UUID1']>;
+};
+
+
+export type QueryGetNftFavouriteListByUserArgs = {
+  filter?: InputMaybe<SavedNftFilterInput>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  orgId: Scalars['UUID1'];
+  searchKey?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetNftHistoryArgs = {
+  contractAddress: Scalars['String'];
+  filterBy?: InputMaybe<NftTxEventType>;
+  networkId: Scalars['String'];
+  nftTokenId?: InputMaybe<Scalars['UUID1']>;
+  orgId: Scalars['UUID1'];
+  tokenId: Scalars['BigInt'];
+};
+
+
+export type QueryGetOffersArgs = {
+  buyerAddress?: InputMaybe<Scalars['String']>;
+  nftTokenId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+};
+
+
+export type QueryGetPdfTemplateByOrgIdAndEventTypeArgs = {
+  orgID: Scalars['UUID1'];
+  pdfTemplateType: EventType;
 };
 
 
@@ -1884,14 +3011,60 @@ export type QueryGetPaymentsByUserIdArgs = {
 };
 
 
+export type QueryGetRegistriesArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  marketplaceID: Scalars['UUID1'];
+  offset?: InputMaybe<Scalars['Int']>;
+  orgID: Scalars['UUID1'];
+  searchKey?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<RegistrySortInput>;
+};
+
+
 export type QueryGetSdkTokenArgs = {
   applicantID: Scalars['String'];
   referrer: Scalars['String'];
 };
 
 
+export type QueryGetSignatureForOfferApprovalArgs = {
+  orderId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+};
+
+
 export type QueryGetSignatureMessageArgs = {
+  networkID: Scalars['UUID1'];
   orgID: Scalars['UUID1'];
+  walletAddress: Scalars['String'];
+};
+
+
+export type QueryGetSupportedCountriesArgs = {
+  marketplaceId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+};
+
+
+export type QueryGetSupportedCurrenciesArgs = {
+  nftTokenId: Scalars['UUID1'];
+  orgId: Scalars['UUID1'];
+};
+
+
+export type QueryGetSupportedCurrenciesByOrganizationArgs = {
+  orgId: Scalars['UUID1'];
+};
+
+
+export type QueryGetSupportedNetworksArgs = {
+  includeTestnets?: InputMaybe<Scalars['Boolean']>;
+  orgId: Scalars['UUID1'];
+};
+
+
+export type QueryGetSupportedNetworksByOrganizationArgs = {
+  orgId: Scalars['UUID1'];
 };
 
 
@@ -1905,6 +3078,20 @@ export type QueryGetTokenTransfersHistoryArgs = {
 };
 
 
+export type QueryGetTokensInRegistryArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  orgID: Scalars['UUID1'];
+  registryID: Scalars['UUID1'];
+  sort?: InputMaybe<TokensInRegistrySortInput>;
+};
+
+
+export type QueryGetUsdPriceArgs = {
+  cryptoCurrencyCode: CryptoCurrenyCode;
+};
+
+
 export type QueryGetUserByWalletAddressArgs = {
   address: Scalars['String'];
   orgId: Scalars['UUID1'];
@@ -1912,6 +3099,14 @@ export type QueryGetUserByWalletAddressArgs = {
 
 
 export type QueryGetUserInvitationsArgs = {
+  orgId: Scalars['UUID1'];
+};
+
+
+export type QueryGetUserOrderActivityArgs = {
+  filter?: InputMaybe<OrderActivityFilters>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
   orgId: Scalars['UUID1'];
 };
 
@@ -1927,8 +3122,40 @@ export type QueryInternalUsersArgs = {
 };
 
 
+export type QueryIsTokenRedeemedArgs = {
+  extensionAddress: Scalars['String'];
+  nftContractId: Scalars['UUID1'];
+  tokenId: Scalars['Int'];
+};
+
+
 export type QueryIsUserOnAllowListArgs = {
   lotID: Scalars['UUID1'];
+};
+
+
+export type QueryIsUserOnClaimableSetsAllowListArgs = {
+  claimableSetID: Scalars['UUID1'];
+};
+
+
+export type QueryListMintUsersArgs = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+  orgID?: InputMaybe<Scalars['UUID1']>;
+};
+
+
+export type QueryListOrgCustomerArgs = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+  orgID: Scalars['UUID1'];
+};
+
+
+export type QueryListOrganizationsArgs = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
 };
 
 
@@ -1987,6 +3214,13 @@ export type QueryPreparePaymentMethodArgs = {
 };
 
 
+export type QueryTokenOwnersArgs = {
+  chainId: Scalars['Int'];
+  contractAddress: Scalars['String'];
+  tokenIds: Array<Scalars['Int']>;
+};
+
+
 export type QueryValidateIpArgs = {
   ip: Scalars['String'];
   organizationID: Scalars['UUID1'];
@@ -1999,8 +3233,110 @@ export type QueryValidatePaymentLimitArgs = {
 };
 
 
+export type QueryValidateTokenTransferArgs = {
+  contractAddress: Scalars['String'];
+  onChainTokenId: Scalars['Int'];
+  walletId: Scalars['UUID1'];
+};
+
+
 export type QueryWalletArgs = {
   id: Scalars['UUID1'];
+};
+
+export type Registry = {
+  __typename?: 'Registry';
+  Artist: Artist;
+  ArtistID: Scalars['UUID1'];
+  Category: Category;
+  CategoryID: Scalars['UUID1'];
+  CollectionName: Scalars['String'];
+  CollectionTotal: Scalars['Int'];
+  ContractAddress: Scalars['String'];
+  CreatedAt: Scalars['Time'];
+  CreatedBy: Scalars['UUID1'];
+  ID: Scalars['UUID1'];
+  IsAllTokensApproved: Scalars['Boolean'];
+  MarketplaceID: Scalars['UUID1'];
+  Network: Network;
+  NetworkID: Scalars['UUID1'];
+  OrganizationID: Scalars['UUID1'];
+  TotalApproved: Scalars['Int'];
+  UpdatedAt: Scalars['Time'];
+};
+
+export enum RegistryColumnType {
+  CollectionName = 'collectionName',
+  CollectionTotal = 'collectionTotal',
+  CreatedAt = 'createdAt',
+  TotalApproved = 'totalApproved'
+}
+
+export type RegistryResponse = {
+  __typename?: 'RegistryResponse';
+  data: Array<Maybe<Registry>>;
+  totalCount: Scalars['Int'];
+};
+
+export type RegistrySortInput = {
+  column: RegistryColumnType;
+  type: OrderType;
+};
+
+export enum RegistryTokenColumnType {
+  TokenId = 'tokenID',
+  TokenName = 'tokenName',
+  TokenType = 'tokenType'
+}
+
+export enum RegistryTokenFilterInput {
+  PriceHighToLow = 'price_high_to_low',
+  PriceLowToHigh = 'price_low_to_high',
+  RecentlyListed = 'recently_listed',
+  RecentlyMinted = 'recently_minted'
+}
+
+export type RegistryTokenSortInput = {
+  column: RegistryTokenColumnType;
+  type: OrderType;
+};
+
+export type RegistryTokens = {
+  __typename?: 'RegistryTokens';
+  CreatedAt?: Maybe<Scalars['Time']>;
+  CreatedBy: Scalars['UUID1'];
+  ID: Scalars['UUID1'];
+  ListingStatus: ListingStatus;
+  MetaData: Erc721Metadata;
+  MintedAt?: Maybe<Scalars['Time']>;
+  NFTTokenID?: Maybe<Scalars['UUID1']>;
+  Owners: Scalars['String'];
+  OwnersList?: Maybe<Array<Maybe<Scalars['String']>>>;
+  Price: Array<Maybe<NftPrice>>;
+  Registry: Registry;
+  RegistryId: Scalars['UUID1'];
+  Status?: Maybe<TokenStatus>;
+  TokenID: Scalars['BigInt'];
+  TokenName: Scalars['String'];
+  TokenOwnerAddress?: Maybe<Scalars['String']>;
+  TokenType: TokenType;
+  TokenURI?: Maybe<Scalars['String']>;
+  UpdatedAt?: Maybe<Scalars['Time']>;
+};
+
+export type RegistryTokensResponse = {
+  __typename?: 'RegistryTokensResponse';
+  data: Array<Maybe<RegistryTokens>>;
+  highestSoldPrice?: Maybe<Array<Maybe<NftPrice>>>;
+  latestSoldPrice?: Maybe<Array<Maybe<NftPrice>>>;
+  lowestSoldPrice?: Maybe<Array<Maybe<NftPrice>>>;
+  totalCount: Scalars['Int'];
+  user?: Maybe<UserResponse>;
+};
+
+export type RelayTxInput = {
+  networkId: Scalars['UUID1'];
+  relayerAddress: Scalars['String'];
 };
 
 export type ReserveMarketplaceBuyNowLotInput = {
@@ -2023,6 +3359,15 @@ export type SdkTokenResponse = {
   token: Scalars['String'];
 };
 
+export enum SavedNftFilterInput {
+  MostSaved = 'most_saved',
+  PriceHighToLow = 'price_high_to_low',
+  PriceLowToHigh = 'price_low_to_high',
+  PurchasedFromOrg = 'purchased_from_org',
+  RecentlyListed = 'recently_listed',
+  RecentlyMinted = 'recently_minted'
+}
+
 export type SettingsInput = {
   avatar?: InputMaybe<Scalars['String']>;
   settingsJson?: InputMaybe<Scalars['String']>;
@@ -2033,6 +3378,8 @@ export type SettingsInput = {
 export type SignInRequest = {
   chainID: Scalars['Int'];
   challenge: Scalars['String'];
+  email?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
   signature: Scalars['String'];
   signer: Scalars['String'];
 };
@@ -2042,6 +3389,12 @@ export type SignInResponse = {
   me: CurrentUser;
   refreshToken: Scalars['String'];
   token: Scalars['String'];
+};
+
+export type SignatureResponse = {
+  __typename?: 'SignatureResponse';
+  messageToSign: Scalars['String'];
+  order: Order;
 };
 
 export type Subscription = {
@@ -2073,6 +3426,69 @@ export type SubscriptionGetMarketplaceAuctionLotArgs = {
 export type SubscriptionMarketplaceCollectionLotsUpdatesArgs = {
   collectionId: Scalars['UUID1'];
 };
+
+export type SupportedCountry = {
+  __typename?: 'SupportedCountry';
+  countryCode: Scalars['String'];
+  countryName: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['UUID1'];
+  marketplace: Marketplace;
+  marketplaceId: Scalars['UUID1'];
+};
+
+export type SupportedCountryInput = {
+  countryCode: Scalars['String'];
+  countryName: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
+  marketplaceId: Scalars['UUID1'];
+};
+
+export type SupportedCurrency = {
+  __typename?: 'SupportedCurrency';
+  contractAddress?: Maybe<Scalars['String']>;
+  id: Scalars['UUID1'];
+  isErc20?: Maybe<Scalars['Boolean']>;
+  name: Scalars['String'];
+  network?: Maybe<Network>;
+  networkId: Scalars['UUID1'];
+  organizationId: Scalars['UUID1'];
+  symbol: Scalars['String'];
+};
+
+export type SupportedCurrencyInput = {
+  contractAddress: Scalars['String'];
+  isErc20: Scalars['Boolean'];
+  name: Scalars['String'];
+  networkId: Scalars['UUID1'];
+  organizationId: Scalars['UUID1'];
+  symbol: Scalars['String'];
+};
+
+export type SupportedNetwork = {
+  __typename?: 'SupportedNetwork';
+  defaultPaymentCurrencyID?: Maybe<Scalars['UUID1']>;
+  id: Scalars['UUID1'];
+  isBuyNowEnabled: Scalars['Boolean'];
+  isMakeOfferEnabled: Scalars['Boolean'];
+  networkId: Scalars['UUID1'];
+  organizationID: Scalars['UUID1'];
+  secondaryMarketplaceContractAddress: Scalars['String'];
+};
+
+export type TaxEstimateResponse = {
+  __typename?: 'TaxEstimateResponse';
+  platformFee: Scalars['Float'];
+  royaltyFee: Scalars['Float'];
+  taxPercentage: Scalars['Float'];
+};
+
+export enum TaxEstimateType {
+  AcceptOffer = 'AcceptOffer',
+  BuyNow = 'BuyNow',
+  ListForSale = 'ListForSale',
+  MakeOffer = 'MakeOffer'
+}
 
 export enum TaxProvider {
   NoOp = 'NoOp',
@@ -2123,11 +3539,39 @@ export type TokenDraft = {
   tokenId?: InputMaybe<Scalars['UUID1']>;
 };
 
+export type TokenMetadata = {
+  __typename?: 'TokenMetadata';
+  description?: Maybe<Scalars['String']>;
+  image?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+};
+
 export type TokenOwner = {
   __typename?: 'TokenOwner';
   tokenId: Scalars['Int'];
   walletAddress: Scalars['String'];
 };
+
+export type TokenOwnersResponse = {
+  __typename?: 'TokenOwnersResponse';
+  owners: Array<Maybe<Scalars['String']>>;
+  tokenId: Scalars['Int'];
+};
+
+export type TokenRequest = {
+  artistID: Scalars['UUID1'];
+  categoryID: Scalars['UUID1'];
+  registryID: Scalars['UUID1'];
+  tokenIDs?: InputMaybe<Array<Scalars['BigInt']>>;
+};
+
+export enum TokenStatus {
+  EnquiryPending = 'ENQUIRY_PENDING',
+  New = 'NEW',
+  OpenForSale = 'OPEN_FOR_SALE',
+  SalePending = 'SALE_PENDING',
+  StaleOwnership = 'STALE_OWNERSHIP'
+}
 
 export type TokenTransfers = {
   __typename?: 'TokenTransfers';
@@ -2140,13 +3584,13 @@ export type TokenTransfers = {
   organizationId?: Maybe<Scalars['UUID1']>;
   resolvedTransferTo?: Maybe<Scalars['String']>;
   status: TransferStatus;
+  token: MarketplaceToken;
   tokenOnChainId?: Maybe<Scalars['Int']>;
   tokenType?: Maybe<TokenType>;
   transactionHash?: Maybe<Scalars['String']>;
   transferTo?: Maybe<Scalars['String']>;
   updatedAt: Scalars['Time'];
   userId?: Maybe<Scalars['UUID1']>;
-  wallet?: Maybe<Wallet>;
   walletId?: Maybe<Scalars['UUID1']>;
 };
 
@@ -2154,6 +3598,31 @@ export enum TokenType {
   Erc721 = 'ERC721',
   Erc1155 = 'ERC1155'
 }
+
+export enum TokensInRegistryColumnType {
+  CreatedAt = 'createdAt',
+  TokenId = 'tokenID',
+  TokenName = 'tokenName'
+}
+
+export type TokensInRegistrySortInput = {
+  column: TokensInRegistryColumnType;
+  type: OrderType;
+};
+
+export type TransactionInput = {
+  actionType?: InputMaybe<Scalars['String']>;
+  amount?: InputMaybe<Scalars['Int']>;
+  currencyCode?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
+  itemCategory?: InputMaybe<Scalars['String']>;
+  paymentMethod: TransactionPaymentMethod;
+};
+
+export type TransactionPaymentMethod = {
+  card: Card;
+  type: Scalars['String'];
+};
 
 export enum TransactionStatus {
   Completed = 'Completed',
@@ -2183,6 +3652,7 @@ export type UpdateMarketplaceClaimableSetInput = {
 
 export type User = {
   __typename?: 'User';
+  createdAt: Scalars['Time'];
   email?: Maybe<Scalars['String']>;
   id: Scalars['UUID'];
   name?: Maybe<Scalars['String']>;
@@ -2197,11 +3667,24 @@ export type UserApiKeyResponse = {
   updatedAt?: Maybe<Scalars['Time']>;
 };
 
+export type UserInput = {
+  email: Scalars['String'];
+  name: Scalars['String'];
+  sub?: InputMaybe<Scalars['String']>;
+  username: Scalars['String'];
+};
+
 export type UserInvitation = {
   __typename?: 'UserInvitation';
   email: Scalars['String'];
   id: Scalars['UUID'];
   status: Scalars['String'];
+};
+
+export type UserList = {
+  __typename?: 'UserList';
+  pagination: Pagination;
+  users: Array<Maybe<UserOrganization>>;
 };
 
 export type UserOrgFilter = {
@@ -2214,6 +3697,7 @@ export type UserOrganization = {
   bidAllowed: Scalars['Boolean'];
   externalUserId: Scalars['String'];
   id: Scalars['UUID'];
+  isBlacklisted: Scalars['Boolean'];
   kycStatus: KycStatus;
   organization: Organization;
   organizationId: Scalars['UUID'];
@@ -2222,6 +3706,16 @@ export type UserOrganization = {
   user: User;
   userId: Scalars['UUID'];
   username?: Maybe<Scalars['String']>;
+  w8Form: Scalars['Boolean'];
+};
+
+export type UserResponse = {
+  __typename?: 'UserResponse';
+  avatar?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  id: Scalars['UUID'];
+  name?: Maybe<Scalars['String']>;
+  username: Scalars['String'];
 };
 
 export type ValidateIpResponse = {
@@ -2247,12 +3741,15 @@ export type ValidatePaymentLimitOutput = {
 export type Wallet = {
   __typename?: 'Wallet';
   address?: Maybe<Scalars['EthAddress']>;
+  deployJobID: Scalars['UUID1'];
   deploymentTxHash?: Maybe<Scalars['String']>;
   gnosisSafeURL?: Maybe<Scalars['String']>;
   id: Scalars['UUID1'];
+  isActive: Scalars['Boolean'];
+  isExternal: Scalars['Boolean'];
   name: Scalars['String'];
-  network: Network;
-  networkId: Scalars['UUID1'];
+  network?: Maybe<Network>;
+  networkId?: Maybe<Scalars['UUID1']>;
   parentID: Scalars['UUID1'];
   parentType: Scalars['String'];
   tokens?: Maybe<Array<WalletToken>>;
@@ -2265,12 +3762,22 @@ export enum WalletParentType {
 
 export type WalletToken = {
   __typename?: 'WalletToken';
+  artistName?: Maybe<Scalars['String']>;
   balance?: Maybe<Scalars['String']>;
   contractAddress: Scalars['String'];
+  contractName: Scalars['String'];
   description?: Maybe<Scalars['String']>;
+  favouriteCount?: Maybe<Scalars['Int']>;
   /** Token ID in smart contract */
   id: Scalars['BigInt'];
+  listedAt?: Maybe<Scalars['Time']>;
   metadata?: Maybe<Erc721Metadata>;
+  mintedAt?: Maybe<Scalars['Time']>;
+  network: Scalars['String'];
+  nftTokenId?: Maybe<Scalars['UUID1']>;
+  owner?: Maybe<Scalars['String']>;
+  price: Array<Maybe<NftPrice>>;
+  status: TokenStatus;
   timeLastUpdated?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   tokenType?: Maybe<Scalars['String']>;
@@ -2282,23 +3789,15 @@ export enum WalletTxType {
   Multisig = 'Multisig'
 }
 
-export type WireBankAddress = {
-  address1?: InputMaybe<Scalars['String']>;
-  address2?: InputMaybe<Scalars['String']>;
-  bankName?: InputMaybe<Scalars['String']>;
-  city?: InputMaybe<Scalars['String']>;
-  country: Scalars['String'];
-  district?: InputMaybe<Scalars['String']>;
-};
 
 export type WireBankAddressOutput = {
   __typename?: 'WireBankAddressOutput';
-  address1: Scalars['String'];
-  address2: Scalars['String'];
+  address1?: InputMaybe<Scalars['String']>;
+  address2?: InputMaybe<Scalars['String']>;
   bankName: Scalars['String'];
   city: Scalars['String'];
   country: Scalars['String'];
-  district: Scalars['String'];
+  district?: InputMaybe<Scalars['String']>;
 };
 
 export type WireBeneficiary = {
@@ -2320,15 +3819,6 @@ export type WireBeneficiaryBank = {
   swiftCode: Scalars['String'];
 };
 
-export type WireBillingDetails = {
-  address1: Scalars['String'];
-  address2?: InputMaybe<Scalars['String']>;
-  city: Scalars['String'];
-  country: Scalars['String'];
-  district?: InputMaybe<Scalars['String']>;
-  name: Scalars['String'];
-  postalCode: Scalars['String'];
-};
 
 export type WireBillingDetailsOutput = {
   __typename?: 'WireBillingDetailsOutput';
@@ -2342,10 +3832,11 @@ export type WireBillingDetailsOutput = {
 };
 
 export type WireData = {
-  accountNumber: Scalars['String'];
-  bankAddress: WireBankAddress;
-  billingDetails: WireBillingDetails;
-  routingNumber: Scalars['String'];
+  iban?: InputMaybe<Scalars['String']>;
+  accountNumber?: InputMaybe<Scalars['String']>;
+  routingNumber?: InputMaybe<Scalars['String']>;
+  bankAddress: WireBankAddressOutput;
+  billingDetails: WireBillingDetailsOutput;
 };
 
 export type WireInstructions = {
@@ -2355,15 +3846,59 @@ export type WireInstructions = {
   trackingRef: Scalars['String'];
 };
 
+export type WirePaymentDetails = {
+  __typename?: 'WirePaymentDetails';
+  WireInstructions?: Maybe<WireInstructions>;
+};
+
 export type WirePaymentMethodOutput = {
   __typename?: 'WirePaymentMethodOutput';
   bankAddress?: Maybe<WireBankAddressOutput>;
   billingDetails?: Maybe<WireBillingDetailsOutput>;
   description: Scalars['String'];
   id: Scalars['UUID1'];
-  instructions?: Maybe<WireInstructions>;
   status: Scalars['String'];
   type: PaymentType;
+};
+
+export type ArtistResponse = {
+  __typename?: 'artistResponse';
+  data: Array<Maybe<Artist>>;
+  totalCount: Scalars['Int'];
+};
+
+export enum CategoryColumnType {
+  CreatedAt = 'createdAt',
+  Name = 'name',
+  Priority = 'priority'
+}
+
+export type CategoryResponse = {
+  __typename?: 'categoryResponse';
+  data?: Maybe<Array<Category>>;
+  totalCount: Scalars['Int'];
+};
+
+export type CategorySortInput = {
+  column?: InputMaybe<CategoryColumnType>;
+  type?: InputMaybe<OrderType>;
+};
+
+export enum ColumnType {
+  ArtistLocation = 'artistLocation',
+  ArtistName = 'artistName',
+  CreatedAt = 'createdAt',
+  Priority = 'priority'
+}
+
+export enum OrderType {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
+
+export type SortInput = {
+  column: ColumnType;
+  type: OrderType;
 };
 
 export type GetPaymentNotificationQueryVariables = Exact<{ [key: string]: never; }>;
@@ -2378,7 +3913,7 @@ export type CreatePaymentMutationVariables = Exact<{
 }>;
 
 
-export type CreatePaymentMutation = { __typename?: 'Mutation', createPayment: { __typename?: 'PaymentOutput', id: any, invoiceID: any, processorPaymentID: string, status: PaymentStatus, userID: any, details?: { __typename?: 'CryptoPaymentDetails', hostedURL: string } | null } };
+export type CreatePaymentMutation = { __typename?: 'Mutation', createPayment: { __typename?: 'PaymentOutput', id: any, invoiceID: any, processorPaymentID: string, status: PaymentStatus, userID: any, details?: { __typename?: 'CryptoPaymentDetails', hostedURL: string } | { __typename?: 'WirePaymentDetails', WireInstructions: { __typename?: 'WireInstructions', trackingRef: string } } | null } };
 
 export type CollectionItemByIdQueryVariables = Exact<{
   id: Scalars['UUID1'];
@@ -2442,7 +3977,7 @@ export type GetPaymentMethodListQueryVariables = Exact<{
 }>;
 
 
-export type GetPaymentMethodListQuery = { __typename?: 'Query', getPaymentMethodList: Array<{ __typename?: 'ACHPaymentMethodOutput', id: any, type: PaymentType, status: string, accountNumber: string, metadata?: { __typename?: 'ACHMetadataOutput', email: string, phoneNumber: string } | null, billingDetails?: { __typename?: 'ACHBillingDetailsOutput', name: string, city: string, country: string, address1: string, address2: string, district: string, postalCode: string } | null, bankAddress?: { __typename?: 'ACHBankAddressOutput', bankName: string } | null } | { __typename?: 'CreditCardPaymentMethodOutput', id: any, type: PaymentType, status: string, network: string, last4Digit: string, metadata?: { __typename?: 'CreditCardMetadataOutput', email: string, phoneNumber: string } | null, billingDetails?: { __typename?: 'CreditCardBillingDetailsOutput', name: string, city: string, country: string, address1: string, address2: string, district: string, postalCode: string } | null } | { __typename?: 'CryptoPaymentMethodOutput', id: any, type: PaymentType, status: string } | { __typename?: 'WirePaymentMethodOutput' }> };
+export type GetPaymentMethodListQuery = { __typename?: 'Query', getPaymentMethodList: Array<{ __typename?: 'ACHPaymentMethodOutput', id: any, type: PaymentType, status: string, accountNumber: string, metadata?: { __typename?: 'ACHMetadataOutput', email: string, phoneNumber: string } | null, billingDetails?: { __typename?: 'ACHBillingDetailsOutput', name: string, city: string, country: string, address1: string, address2: string, district: string, postalCode: string } | null, bankAddress?: { __typename?: 'ACHBankAddressOutput', bankName: string } | null } | { __typename?: 'CreditCardPaymentMethodOutput', id: any, type: PaymentType, status: string, network: string, last4Digit: string, metadata?: { __typename?: 'CreditCardMetadataOutput', email: string, phoneNumber: string } | null, billingDetails?: { __typename?: 'CreditCardBillingDetailsOutput', name: string, city: string, country: string, address1: string, address2: string, district: string, postalCode: string } | null } | { __typename?: 'CryptoPaymentMethodOutput', id: any, type: PaymentType, status: string } | { __typename?: 'WirePaymentMethodOutput', id: any, type: PaymentType, status: string, description: string, bankAddress?: { __typename?: 'WireBankAddressOutput', bankName: string, address1: string, address2: string, country: string, district: string, city: string } | null, billingDetails?: { __typename?: 'WireBillingDetailsOutput', name: string, city: string, country: string, address1: string, address2: string, district: string, postalCode: string } | null }> };
 
 export type CreatePaymentMethodMutationVariables = Exact<{
   orgID: Scalars['UUID1'];
@@ -2482,6 +4017,22 @@ export type ValidatePaymentLimitQueryVariables = Exact<{
 
 export type ValidatePaymentLimitQuery = { __typename?: 'Query', validatePaymentLimit: { __typename?: 'ValidatePaymentLimitOutput', ach: { __typename?: 'ValidatePaymentLimitData', remainingTotal: number, isLimitExceeded: boolean, remainingTransaction: number }, wire: { __typename?: 'ValidatePaymentLimitData', remainingTotal: number, isLimitExceeded: boolean, remainingTransaction: number }, creditCard: { __typename?: 'ValidatePaymentLimitData', remainingTotal: number, isLimitExceeded: boolean, remainingTransaction: number } } };
 
+export type AddressScreeningMutationVariables = Exact<{
+  orgId: Scalars['UUID1'];
+  input: AddressScreeningInput;
+}>;
+
+
+export type AddressScreeningMutation = { __typename?: 'Mutation', addressScreening: RiskRating };
+
+export type CardScreeningQueryVariables = Exact<{
+  orgId: Scalars['UUID1'];
+  input: CardScreeningInput;
+}>;
+
+
+export type CardScreeningQuery = { __typename?: 'Query', cardScreening: { __typename?: 'CardResponse', level?: string | null, status?: string | null } };
+
 export type GetTaxQuoteQueryVariables = Exact<{
   input: TaxQuoteInput;
 }>;
@@ -2519,13 +4070,13 @@ export const GetPaymentNotificationDocument = gql`
  * });
  */
 export function useGetPaymentNotificationQuery(baseOptions?: Apollo.QueryHookOptions<GetPaymentNotificationQuery, GetPaymentNotificationQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetPaymentNotificationQuery, GetPaymentNotificationQueryVariables>(GetPaymentNotificationDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetPaymentNotificationQuery, GetPaymentNotificationQueryVariables>(GetPaymentNotificationDocument, options);
+}
 export function useGetPaymentNotificationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPaymentNotificationQuery, GetPaymentNotificationQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetPaymentNotificationQuery, GetPaymentNotificationQueryVariables>(GetPaymentNotificationDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetPaymentNotificationQuery, GetPaymentNotificationQueryVariables>(GetPaymentNotificationDocument, options);
+}
 export type GetPaymentNotificationQueryHookResult = ReturnType<typeof useGetPaymentNotificationQuery>;
 export type GetPaymentNotificationLazyQueryHookResult = ReturnType<typeof useGetPaymentNotificationLazyQuery>;
 export type GetPaymentNotificationQueryResult = Apollo.QueryResult<GetPaymentNotificationQuery, GetPaymentNotificationQueryVariables>;
@@ -2544,6 +4095,26 @@ export const CreatePaymentDocument = gql`
     details {
       ... on CryptoPaymentDetails {
         hostedURL
+      }
+      ...on  WirePaymentDetails{
+        WireInstructions{
+           trackingRef
+          beneficiary{
+            name
+            address1
+            address2
+          }
+          beneficiaryBank{
+             name
+            swiftCode 
+            routingNumber
+            accountNumber
+            address
+            city
+            postalCode
+            country
+          }
+        }
       }
     }
   }
@@ -2571,9 +4142,9 @@ export type CreatePaymentMutationFn = Apollo.MutationFunction<CreatePaymentMutat
  * });
  */
 export function useCreatePaymentMutation(baseOptions?: Apollo.MutationHookOptions<CreatePaymentMutation, CreatePaymentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreatePaymentMutation, CreatePaymentMutationVariables>(CreatePaymentDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreatePaymentMutation, CreatePaymentMutationVariables>(CreatePaymentDocument, options);
+}
 export type CreatePaymentMutationHookResult = ReturnType<typeof useCreatePaymentMutation>;
 export type CreatePaymentMutationResult = Apollo.MutationResult<CreatePaymentMutation>;
 export type CreatePaymentMutationOptions = Apollo.BaseMutationOptions<CreatePaymentMutation, CreatePaymentMutationVariables>;
@@ -2603,13 +4174,13 @@ export const CollectionItemByIdDocument = gql`
  * });
  */
 export function useCollectionItemByIdQuery(baseOptions: Apollo.QueryHookOptions<CollectionItemByIdQuery, CollectionItemByIdQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CollectionItemByIdQuery, CollectionItemByIdQueryVariables>(CollectionItemByIdDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<CollectionItemByIdQuery, CollectionItemByIdQueryVariables>(CollectionItemByIdDocument, options);
+}
 export function useCollectionItemByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CollectionItemByIdQuery, CollectionItemByIdQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CollectionItemByIdQuery, CollectionItemByIdQueryVariables>(CollectionItemByIdDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<CollectionItemByIdQuery, CollectionItemByIdQueryVariables>(CollectionItemByIdDocument, options);
+}
 export type CollectionItemByIdQueryHookResult = ReturnType<typeof useCollectionItemByIdQuery>;
 export type CollectionItemByIdLazyQueryHookResult = ReturnType<typeof useCollectionItemByIdLazyQuery>;
 export type CollectionItemByIdQueryResult = Apollo.QueryResult<CollectionItemByIdQuery, CollectionItemByIdQueryVariables>;
@@ -2648,9 +4219,9 @@ export type CreateAuctionInvoiceMutationFn = Apollo.MutationFunction<CreateAucti
  * });
  */
 export function useCreateAuctionInvoiceMutation(baseOptions?: Apollo.MutationHookOptions<CreateAuctionInvoiceMutation, CreateAuctionInvoiceMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateAuctionInvoiceMutation, CreateAuctionInvoiceMutationVariables>(CreateAuctionInvoiceDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateAuctionInvoiceMutation, CreateAuctionInvoiceMutationVariables>(CreateAuctionInvoiceDocument, options);
+}
 export type CreateAuctionInvoiceMutationHookResult = ReturnType<typeof useCreateAuctionInvoiceMutation>;
 export type CreateAuctionInvoiceMutationResult = Apollo.MutationResult<CreateAuctionInvoiceMutation>;
 export type CreateAuctionInvoiceMutationOptions = Apollo.BaseMutationOptions<CreateAuctionInvoiceMutation, CreateAuctionInvoiceMutationVariables>;
@@ -2691,9 +4262,9 @@ export type ReserveBuyNowLotMutationFn = Apollo.MutationFunction<ReserveBuyNowLo
  * });
  */
 export function useReserveBuyNowLotMutation(baseOptions?: Apollo.MutationHookOptions<ReserveBuyNowLotMutation, ReserveBuyNowLotMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<ReserveBuyNowLotMutation, ReserveBuyNowLotMutationVariables>(ReserveBuyNowLotDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<ReserveBuyNowLotMutation, ReserveBuyNowLotMutationVariables>(ReserveBuyNowLotDocument, options);
+}
 export type ReserveBuyNowLotMutationHookResult = ReturnType<typeof useReserveBuyNowLotMutation>;
 export type ReserveBuyNowLotMutationResult = Apollo.MutationResult<ReserveBuyNowLotMutation>;
 export type ReserveBuyNowLotMutationOptions = Apollo.BaseMutationOptions<ReserveBuyNowLotMutation, ReserveBuyNowLotMutationVariables>;
@@ -2723,9 +4294,9 @@ export type ReleaseReservationBuyNowLotMutationFn = Apollo.MutationFunction<Rele
  * });
  */
 export function useReleaseReservationBuyNowLotMutation(baseOptions?: Apollo.MutationHookOptions<ReleaseReservationBuyNowLotMutation, ReleaseReservationBuyNowLotMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<ReleaseReservationBuyNowLotMutation, ReleaseReservationBuyNowLotMutationVariables>(ReleaseReservationBuyNowLotDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<ReleaseReservationBuyNowLotMutation, ReleaseReservationBuyNowLotMutationVariables>(ReleaseReservationBuyNowLotDocument, options);
+}
 export type ReleaseReservationBuyNowLotMutationHookResult = ReturnType<typeof useReleaseReservationBuyNowLotMutation>;
 export type ReleaseReservationBuyNowLotMutationResult = Apollo.MutationResult<ReleaseReservationBuyNowLotMutation>;
 export type ReleaseReservationBuyNowLotMutationOptions = Apollo.BaseMutationOptions<ReleaseReservationBuyNowLotMutation, ReleaseReservationBuyNowLotMutationVariables>;
@@ -2761,13 +4332,13 @@ export const GetInvoiceDetailsDocument = gql`
  * });
  */
 export function useGetInvoiceDetailsQuery(baseOptions: Apollo.QueryHookOptions<GetInvoiceDetailsQuery, GetInvoiceDetailsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetInvoiceDetailsQuery, GetInvoiceDetailsQueryVariables>(GetInvoiceDetailsDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetInvoiceDetailsQuery, GetInvoiceDetailsQueryVariables>(GetInvoiceDetailsDocument, options);
+}
 export function useGetInvoiceDetailsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetInvoiceDetailsQuery, GetInvoiceDetailsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetInvoiceDetailsQuery, GetInvoiceDetailsQueryVariables>(GetInvoiceDetailsDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetInvoiceDetailsQuery, GetInvoiceDetailsQueryVariables>(GetInvoiceDetailsDocument, options);
+}
 export type GetInvoiceDetailsQueryHookResult = ReturnType<typeof useGetInvoiceDetailsQuery>;
 export type GetInvoiceDetailsLazyQueryHookResult = ReturnType<typeof useGetInvoiceDetailsLazyQuery>;
 export type GetInvoiceDetailsQueryResult = Apollo.QueryResult<GetInvoiceDetailsQuery, GetInvoiceDetailsQueryVariables>;
@@ -2808,13 +4379,13 @@ export const ApplyDiscountCodeDocument = gql`
  * });
  */
 export function useApplyDiscountCodeQuery(baseOptions: Apollo.QueryHookOptions<ApplyDiscountCodeQuery, ApplyDiscountCodeQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ApplyDiscountCodeQuery, ApplyDiscountCodeQueryVariables>(ApplyDiscountCodeDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ApplyDiscountCodeQuery, ApplyDiscountCodeQueryVariables>(ApplyDiscountCodeDocument, options);
+}
 export function useApplyDiscountCodeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ApplyDiscountCodeQuery, ApplyDiscountCodeQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ApplyDiscountCodeQuery, ApplyDiscountCodeQueryVariables>(ApplyDiscountCodeDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ApplyDiscountCodeQuery, ApplyDiscountCodeQueryVariables>(ApplyDiscountCodeDocument, options);
+}
 export type ApplyDiscountCodeQueryHookResult = ReturnType<typeof useApplyDiscountCodeQuery>;
 export type ApplyDiscountCodeLazyQueryHookResult = ReturnType<typeof useApplyDiscountCodeLazyQuery>;
 export type ApplyDiscountCodeQueryResult = Apollo.QueryResult<ApplyDiscountCodeQuery, ApplyDiscountCodeQueryVariables>;
@@ -2859,13 +4430,13 @@ export const MeDocument = gql`
  * });
  */
 export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+}
 export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+}
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
@@ -2895,13 +4466,13 @@ export const PaymentKeyDocument = gql`
  * });
  */
 export function usePaymentKeyQuery(baseOptions: Apollo.QueryHookOptions<PaymentKeyQuery, PaymentKeyQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<PaymentKeyQuery, PaymentKeyQueryVariables>(PaymentKeyDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<PaymentKeyQuery, PaymentKeyQueryVariables>(PaymentKeyDocument, options);
+}
 export function usePaymentKeyLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PaymentKeyQuery, PaymentKeyQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<PaymentKeyQuery, PaymentKeyQueryVariables>(PaymentKeyDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<PaymentKeyQuery, PaymentKeyQueryVariables>(PaymentKeyDocument, options);
+}
 export type PaymentKeyQueryHookResult = ReturnType<typeof usePaymentKeyQuery>;
 export type PaymentKeyLazyQueryHookResult = ReturnType<typeof usePaymentKeyLazyQuery>;
 export type PaymentKeyQueryResult = Apollo.QueryResult<PaymentKeyQuery, PaymentKeyQueryVariables>;
@@ -2955,6 +4526,29 @@ export const GetPaymentMethodListDocument = gql`
       type
       status
     }
+    ... on WirePaymentMethodOutput {
+      id
+      type
+      status
+      description
+      bankAddress {
+        bankName
+        address1
+        address2
+        country
+        district
+        city
+      }
+      billingDetails {
+        name
+        city
+        country
+        address1
+        address2
+        district
+        postalCode
+      }
+    }
   }
 }
     `;
@@ -2976,13 +4570,13 @@ export const GetPaymentMethodListDocument = gql`
  * });
  */
 export function useGetPaymentMethodListQuery(baseOptions: Apollo.QueryHookOptions<GetPaymentMethodListQuery, GetPaymentMethodListQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetPaymentMethodListQuery, GetPaymentMethodListQueryVariables>(GetPaymentMethodListDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetPaymentMethodListQuery, GetPaymentMethodListQueryVariables>(GetPaymentMethodListDocument, options);
+}
 export function useGetPaymentMethodListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPaymentMethodListQuery, GetPaymentMethodListQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetPaymentMethodListQuery, GetPaymentMethodListQueryVariables>(GetPaymentMethodListDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetPaymentMethodListQuery, GetPaymentMethodListQueryVariables>(GetPaymentMethodListDocument, options);
+}
 export type GetPaymentMethodListQueryHookResult = ReturnType<typeof useGetPaymentMethodListQuery>;
 export type GetPaymentMethodListLazyQueryHookResult = ReturnType<typeof useGetPaymentMethodListLazyQuery>;
 export type GetPaymentMethodListQueryResult = Apollo.QueryResult<GetPaymentMethodListQuery, GetPaymentMethodListQueryVariables>;
@@ -3029,9 +4623,9 @@ export type CreatePaymentMethodMutationFn = Apollo.MutationFunction<CreatePaymen
  * });
  */
 export function useCreatePaymentMethodMutation(baseOptions?: Apollo.MutationHookOptions<CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables>(CreatePaymentMethodDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables>(CreatePaymentMethodDocument, options);
+}
 export type CreatePaymentMethodMutationHookResult = ReturnType<typeof useCreatePaymentMethodMutation>;
 export type CreatePaymentMethodMutationResult = Apollo.MutationResult<CreatePaymentMethodMutation>;
 export type CreatePaymentMethodMutationOptions = Apollo.BaseMutationOptions<CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables>;
@@ -3061,9 +4655,9 @@ export type DeletePaymentMethodMutationFn = Apollo.MutationFunction<DeletePaymen
  * });
  */
 export function useDeletePaymentMethodMutation(baseOptions?: Apollo.MutationHookOptions<DeletePaymentMethodMutation, DeletePaymentMethodMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeletePaymentMethodMutation, DeletePaymentMethodMutationVariables>(DeletePaymentMethodDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<DeletePaymentMethodMutation, DeletePaymentMethodMutationVariables>(DeletePaymentMethodDocument, options);
+}
 export type DeletePaymentMethodMutationHookResult = ReturnType<typeof useDeletePaymentMethodMutation>;
 export type DeletePaymentMethodMutationResult = Apollo.MutationResult<DeletePaymentMethodMutation>;
 export type DeletePaymentMethodMutationOptions = Apollo.BaseMutationOptions<DeletePaymentMethodMutation, DeletePaymentMethodMutationVariables>;
@@ -3094,13 +4688,13 @@ export const PreparePaymentMethodDocument = gql`
  * });
  */
 export function usePreparePaymentMethodQuery(baseOptions: Apollo.QueryHookOptions<PreparePaymentMethodQuery, PreparePaymentMethodQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<PreparePaymentMethodQuery, PreparePaymentMethodQueryVariables>(PreparePaymentMethodDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<PreparePaymentMethodQuery, PreparePaymentMethodQueryVariables>(PreparePaymentMethodDocument, options);
+}
 export function usePreparePaymentMethodLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PreparePaymentMethodQuery, PreparePaymentMethodQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<PreparePaymentMethodQuery, PreparePaymentMethodQueryVariables>(PreparePaymentMethodDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<PreparePaymentMethodQuery, PreparePaymentMethodQueryVariables>(PreparePaymentMethodDocument, options);
+}
 export type PreparePaymentMethodQueryHookResult = ReturnType<typeof usePreparePaymentMethodQuery>;
 export type PreparePaymentMethodLazyQueryHookResult = ReturnType<typeof usePreparePaymentMethodLazyQuery>;
 export type PreparePaymentMethodQueryResult = Apollo.QueryResult<PreparePaymentMethodQuery, PreparePaymentMethodQueryVariables>;
@@ -3144,13 +4738,13 @@ export const GetPaymentMethodStatusDocument = gql`
  * });
  */
 export function useGetPaymentMethodStatusQuery(baseOptions: Apollo.QueryHookOptions<GetPaymentMethodStatusQuery, GetPaymentMethodStatusQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetPaymentMethodStatusQuery, GetPaymentMethodStatusQueryVariables>(GetPaymentMethodStatusDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetPaymentMethodStatusQuery, GetPaymentMethodStatusQueryVariables>(GetPaymentMethodStatusDocument, options);
+}
 export function useGetPaymentMethodStatusLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPaymentMethodStatusQuery, GetPaymentMethodStatusQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetPaymentMethodStatusQuery, GetPaymentMethodStatusQueryVariables>(GetPaymentMethodStatusDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetPaymentMethodStatusQuery, GetPaymentMethodStatusQueryVariables>(GetPaymentMethodStatusDocument, options);
+}
 export type GetPaymentMethodStatusQueryHookResult = ReturnType<typeof useGetPaymentMethodStatusQuery>;
 export type GetPaymentMethodStatusLazyQueryHookResult = ReturnType<typeof useGetPaymentMethodStatusLazyQuery>;
 export type GetPaymentMethodStatusQueryResult = Apollo.QueryResult<GetPaymentMethodStatusQuery, GetPaymentMethodStatusQueryVariables>;
@@ -3194,16 +4788,85 @@ export const ValidatePaymentLimitDocument = gql`
  * });
  */
 export function useValidatePaymentLimitQuery(baseOptions: Apollo.QueryHookOptions<ValidatePaymentLimitQuery, ValidatePaymentLimitQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ValidatePaymentLimitQuery, ValidatePaymentLimitQueryVariables>(ValidatePaymentLimitDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ValidatePaymentLimitQuery, ValidatePaymentLimitQueryVariables>(ValidatePaymentLimitDocument, options);
+}
 export function useValidatePaymentLimitLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ValidatePaymentLimitQuery, ValidatePaymentLimitQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ValidatePaymentLimitQuery, ValidatePaymentLimitQueryVariables>(ValidatePaymentLimitDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ValidatePaymentLimitQuery, ValidatePaymentLimitQueryVariables>(ValidatePaymentLimitDocument, options);
+}
 export type ValidatePaymentLimitQueryHookResult = ReturnType<typeof useValidatePaymentLimitQuery>;
 export type ValidatePaymentLimitLazyQueryHookResult = ReturnType<typeof useValidatePaymentLimitLazyQuery>;
 export type ValidatePaymentLimitQueryResult = Apollo.QueryResult<ValidatePaymentLimitQuery, ValidatePaymentLimitQueryVariables>;
+export const AddressScreeningDocument = gql`
+    mutation AddressScreening($orgId: UUID1!, $input: AddressScreeningInput!) {
+  addressScreening(orgID: $orgId, input: $input)
+}
+    `;
+export type AddressScreeningMutationFn = Apollo.MutationFunction<AddressScreeningMutation, AddressScreeningMutationVariables>;
+
+/**
+ * __useAddressScreeningMutation__
+ *
+ * To run a mutation, you first call `useAddressScreeningMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddressScreeningMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addressScreeningMutation, { data, loading, error }] = useAddressScreeningMutation({
+ *   variables: {
+ *      orgId: // value for 'orgId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddressScreeningMutation(baseOptions?: Apollo.MutationHookOptions<AddressScreeningMutation, AddressScreeningMutationVariables>) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<AddressScreeningMutation, AddressScreeningMutationVariables>(AddressScreeningDocument, options);
+}
+export type AddressScreeningMutationHookResult = ReturnType<typeof useAddressScreeningMutation>;
+export type AddressScreeningMutationResult = Apollo.MutationResult<AddressScreeningMutation>;
+export type AddressScreeningMutationOptions = Apollo.BaseMutationOptions<AddressScreeningMutation, AddressScreeningMutationVariables>;
+export const CardScreeningDocument = gql`
+    query CardScreening($orgId: UUID1!, $input: CardScreeningInput!) {
+  cardScreening(orgID: $orgId, input: $input) {
+    level
+    status
+  }
+}
+    `;
+
+/**
+ * __useCardScreeningQuery__
+ *
+ * To run a query within a React component, call `useCardScreeningQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCardScreeningQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCardScreeningQuery({
+ *   variables: {
+ *      orgId: // value for 'orgId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCardScreeningQuery(baseOptions: Apollo.QueryHookOptions<CardScreeningQuery, CardScreeningQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<CardScreeningQuery, CardScreeningQueryVariables>(CardScreeningDocument, options);
+}
+export function useCardScreeningLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CardScreeningQuery, CardScreeningQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<CardScreeningQuery, CardScreeningQueryVariables>(CardScreeningDocument, options);
+}
+export type CardScreeningQueryHookResult = ReturnType<typeof useCardScreeningQuery>;
+export type CardScreeningLazyQueryHookResult = ReturnType<typeof useCardScreeningLazyQuery>;
+export type CardScreeningQueryResult = Apollo.QueryResult<CardScreeningQuery, CardScreeningQueryVariables>;
 export const GetTaxQuoteDocument = gql`
     query GetTaxQuote($input: TaxQuoteInput!) {
   getTaxQuote(input: $input) {
@@ -3238,13 +4901,13 @@ export const GetTaxQuoteDocument = gql`
  * });
  */
 export function useGetTaxQuoteQuery(baseOptions: Apollo.QueryHookOptions<GetTaxQuoteQuery, GetTaxQuoteQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTaxQuoteQuery, GetTaxQuoteQueryVariables>(GetTaxQuoteDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetTaxQuoteQuery, GetTaxQuoteQueryVariables>(GetTaxQuoteDocument, options);
+}
 export function useGetTaxQuoteLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTaxQuoteQuery, GetTaxQuoteQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTaxQuoteQuery, GetTaxQuoteQueryVariables>(GetTaxQuoteDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetTaxQuoteQuery, GetTaxQuoteQueryVariables>(GetTaxQuoteDocument, options);
+}
 export type GetTaxQuoteQueryHookResult = ReturnType<typeof useGetTaxQuoteQuery>;
 export type GetTaxQuoteLazyQueryHookResult = ReturnType<typeof useGetTaxQuoteLazyQuery>;
 export type GetTaxQuoteQueryResult = Apollo.QueryResult<GetTaxQuoteQuery, GetTaxQuoteQueryVariables>;

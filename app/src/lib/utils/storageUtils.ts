@@ -72,11 +72,12 @@ function setCookie(
     getCookieSecurityParams(params),
   ].filter(Boolean).join("; ");
 
-  console.log(`Setting cookie ${ key }=<VALUE>; ${ cookieParams }`);
+  console.log(`Setting cookie ${ key }=<VALUE>; ${ cookieParams } params:${ JSON.stringify(value) }`);
 
-  if (DEBUG || isLocalhost()) {
-    document.cookie = `${ key }=${ serializedValue }; ${ cookieParams }`;
-  }
+  // if (DEBUG || isLocalhost()) {
+  document.cookie = `${ key }=${ serializedValue }; ${ cookieParams }`;
+  // }
+  console.log(`Setting cookie ${ key }=<VALUE>;=2`, document.cookie);
 }
 
 function parseCookie<T = any>(cookieValue: string): T {

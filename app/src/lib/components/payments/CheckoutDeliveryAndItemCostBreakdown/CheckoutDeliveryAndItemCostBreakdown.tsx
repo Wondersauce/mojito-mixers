@@ -11,6 +11,9 @@ import { FiatCurrency, CryptoCurrency } from "../../../domain/payment/payment.in
 interface CheckoutDeliveryAndItemCostBreakdownProps {
   checkoutItems: CheckoutItem[];
   taxes: null | TaxesState;
+  hideDiscount: boolean;
+  showWalletAddress: boolean;
+  hideWalletSelection?: boolean;
   displayCurrency: FiatCurrency;
   cryptoCurrencies: CryptoCurrency[];
   onlyCryptoWarningVariant?: CheckoutItemCostBreakdownWarningVariant;
@@ -24,6 +27,9 @@ interface CheckoutDeliveryAndItemCostBreakdownProps {
 export const CheckoutDeliveryAndItemCostBreakdown: React.FC<CheckoutDeliveryAndItemCostBreakdownProps> = ({
   checkoutItems,
   taxes,
+  showWalletAddress = true,
+  hideDiscount,
+  hideWalletSelection,
   displayCurrency,
   cryptoCurrencies,
   onlyCryptoWarningVariant,
@@ -34,18 +40,25 @@ export const CheckoutDeliveryAndItemCostBreakdown: React.FC<CheckoutDeliveryAndI
   onWalletChange,
 }) => (
   <Stack sx={{ display: "flex", width: theme => ({ xs: "100%", md: `calc(50% - ${ theme.spacing(3.75 / 2) })` }) }}>
-    <DeliveryWalletSelector
-      validatePersonalAddress={ validatePersonalDeliveryAddress }
-      wallets={ wallets }
-      wallet={ wallet }
-      multiSigEnabled={ multiSigEnabled }
-      onWalletChange={ onWalletChange } />
+    {
+      showWalletAddress &&
+      (
+        <DeliveryWalletSelector
+          validatePersonalAddress={ validatePersonalDeliveryAddress }
+          hideWalletSelection={ hideWalletSelection ?? false }
+          wallets={ wallets }
+          wallet={ wallet }
+          multiSigEnabled={ multiSigEnabled }
+          onWalletChange={ onWalletChange } />
+      )
+    }
 
     <Divider sx={{ my: 3.75 }} />
 
     <CheckoutItemCostBreakdown
       checkoutItems={ checkoutItems }
       taxes={ taxes }
+      hideDiscount={ hideDiscount }
       displayCurrency={ displayCurrency }
       cryptoCurrencies={ cryptoCurrencies }
       onlyCryptoWarningVariant={ onlyCryptoWarningVariant } />
