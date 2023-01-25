@@ -35,6 +35,7 @@ export const ErrorView: React.FC<ErrorViewProps> = ({
     error,
     circleFieldErrors,
     errorMessage = "",
+    hidePrimaryBtn = false,
   } = { },
   reviewHref,
   errorImageSrc,
@@ -93,6 +94,7 @@ export const ErrorView: React.FC<ErrorViewProps> = ({
 
       <CheckoutModalFooter
         variant="toReview"
+        hidePrimaryBtn={ hidePrimaryBtn }
         submitHref={ reviewHref }
         submitLabel={ ERROR_ACTION_LABELS[at] }
         submitDisabled={ !displayMessage || !onFixError }

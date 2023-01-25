@@ -67,10 +67,11 @@ export type ControlledCountrySelectorProps<TFieldValues = any, TContext = any> =
 };
 
 // eslint-disable-next-line react/function-component-definition
-export function ControlledCountrySelector <TFieldValues = any, TContext = any>({
+export function ControlledCountrySelector<TFieldValues = any, TContext = any>({
   name: parentName,
   control,
   label,
+  disabled,
 }: ControlledCountrySelectorProps<TFieldValues, TContext>) {
   return (
     <Controller<TFieldValues>
@@ -85,6 +86,7 @@ export function ControlledCountrySelector <TFieldValues = any, TContext = any>({
             id={ name }
             name={ name }
             value={ isSelectOption(value) ? value : EMPTY_OPTION }
+            disabled={ disabled }
             autoComplete="country"
             label={ label }
             onSelectCountry={ onChange }

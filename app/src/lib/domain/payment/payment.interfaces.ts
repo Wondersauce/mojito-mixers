@@ -21,10 +21,20 @@ export type AchAccount = {
   // accountName: string;
 };
 
+export type BankCountry = {
+  lable?: string;
+  value?: string;
+};
+
 export type WireAccount = {
   type: "Wire";
+  bankCountryType: string;
+  iban: string;
   accountNumber: string;
   routingNumber: string;
+  bankName: string;
+  bankCity: string;
+  bankCountry: BankCountry;
 };
 
 export type CryptoAddress = {

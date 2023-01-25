@@ -57,6 +57,7 @@ export const AuthenticationView: React.FC<AuthenticationViewProps> = ({
       <CheckoutItemCostBreakdown
         checkoutItems={ checkoutItems }
         taxes={ taxes }
+        hideDiscount={ false }
         displayCurrency={ displayCurrency }
         cryptoCurrencies={ cryptoCurrencies }
         onlyCryptoWarningVariant={ marketType === "secondary" ? "box" : undefined } />

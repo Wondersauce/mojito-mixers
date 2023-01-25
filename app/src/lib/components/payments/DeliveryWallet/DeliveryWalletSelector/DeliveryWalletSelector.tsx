@@ -11,6 +11,7 @@ import { useDictionary } from "../../../../hooks/useDictionary";
 
 export interface DeliveryWalletSelectorProps {
   validatePersonalAddress: boolean;
+  hideWalletSelection?: boolean;
   wallets?: Wallet[];
   wallet: null | string | Wallet;
   multiSigEnabled: boolean;
@@ -25,6 +26,7 @@ const INVALID_WALLET_ADDRESS_MESSAGE = withInvalidErrorMessage({
 
 export const DeliveryWalletSelector: React.FC<DeliveryWalletSelectorProps> = ({
   validatePersonalAddress,
+  hideWalletSelection,
   wallets,
   wallet,
   multiSigEnabled,
@@ -52,6 +54,7 @@ export const DeliveryWalletSelector: React.FC<DeliveryWalletSelectorProps> = ({
       <DisplayBox>
         <Typography sx={{ mb: 1.5 }}>{ dictionary.walletInfo }</Typography>
 
+        { !hideWalletSelection && (
         <WalletAddressSelector
           margin="none"
           label="Wallet"
@@ -61,8 +64,9 @@ export const DeliveryWalletSelector: React.FC<DeliveryWalletSelectorProps> = ({
           onSelectWallet={ handleSelectWallet }
           error={ showAddressError }
           helperText={ showAddressError ? INVALID_WALLET_ADDRESS_MESSAGE : undefined } />
+        ) }
 
-        { isCustomWalletAddress(wallet) && (
+        { isCustomWalletAddress(wallet) && !hideWalletSelection && (
           <>
             <Typography variant="body1" sx={{ my: 1.5 }}>
               Once minted, this is where your items will be delivered:

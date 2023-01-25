@@ -2,19 +2,22 @@ import { Backdrop, CircularProgress } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Theme, SxProps } from "@mui/material/styles";
 import { ApolloError } from "@apollo/client";
+import { uuid } from "uuidv4";
+// import { config } from "../../../../utils/config/config.constants";
 import { savedPaymentMethodToBillingInfo, transformRawSavedPaymentMethods } from "../../../domain/circle/circle.utils";
 import { UserFormat } from "../../../domain/auth/authentication.interfaces";
 import { PaymentType, PaymentMethod, FiatCurrency, CryptoCurrency } from "../../../domain/payment/payment.interfaces";
 import { CheckoutEventData, CheckoutEventType } from "../../../domain/events/events.interfaces";
 import { CheckoutItemInfo } from "../../../domain/product/product.interfaces";
 import { BillingInfo } from "../../../forms/BillingInfoForm";
-import { useDeletePaymentMethodMutation, useGetInvoiceDetailsQuery, useGetPaymentMethodListQuery, useMeQuery, useReleaseReservationBuyNowLotMutation } from "../../../queries/graphqlGenerated";
+import { useDeletePaymentMethodMutation, useGetInvoiceDetailsQuery, useGetPaymentMethodListQuery, useMeQuery, useReleaseReservationBuyNowLotMutation, WireInstructions, User } from "../../../queries/graphqlGenerated";
 import { AuthenticationView } from "../../../views/Authentication/AuthenticationView";
 import { BillingView } from "../../../views/Billing/BillingView";
 import { ConfirmationView } from "../../../views/Confirmation/ConfirmationView";
+import { SecondaryConfirmationView } from "../../../views/Confirmation/SecondaryConfirmationView";
 import { PaymentView } from "../../../views/Payment/PaymentView";
 import { CheckoutModalHeader, CheckoutModalHeaderVariant } from "../../payments/CheckoutModalHeader/CheckoutModalHeader";
-import { PurchasingView } from "../../../views/Purchasing/PurchasingView";
+import { PurchasingView, PurchasDetails } from "../../../views/Purchasing/PurchasingView";
 import { ErrorView } from "../../../views/Error/ErrorView";
 import { RawSavedPaymentMethod } from "../../../domain/circle/circle.interfaces";
 import { continuePlaidOAuthFlow, PlaidFlow } from "../../../hooks/usePlaid";
@@ -43,13 +46,33 @@ import { IS_BROWSER } from "../../../domain/build/build.constants";
 import { PromoCodeProvider } from "../../../utils/promoCodeUtils";
 import { getLastPaymentMethodID } from "../../../hooks/useFullPayment";
 
+declare global {
+  interface Window {
+    _Sardine: any;
+  }
+}
+
 export type LoaderMode = "default" | "success" | "error";
 
 export type Market = "primary" | "secondary";
+export type ConfirmationType = "primary" | "secondary";
+
+export interface SardineConfig {
+  host: string;
+  clientId: string;
+  environment: string;
+  isSardineEnabled: boolean;
+}
+
+export interface ChainalysisConfig {
+  isChainalysisEnabled: boolean;
+}
 
 export interface PUICheckoutOverlayProps {
   // Modal:
   open: boolean;
+  sardineConfig: SardineConfig;
+  chainalysisConfig: ChainalysisConfig;
   onClose?: () => void;
   onGoTo: (pathnameOrUrl: string, options?: PUIRouterOptions) => void;
 
@@ -82,6 +105,8 @@ export interface PUICheckoutOverlayProps {
   acceptedCreditCardNetworks?: CreditCardNetwork[];
   network?: Network;
   dictionary?: Partial<PUIDictionary>;
+  hideDiscount?: boolean;
+  confirmationType?: ConfirmationType;
 
   // Legal:
   consentType?: ConsentType;
@@ -112,6 +137,10 @@ export type PUICheckoutComponentProps = Partial<PUICheckoutProps> & Pick<
 const DEV_DEBUG_ENABLED = IS_BROWSER && localStorage.getItem(DEV_DEBUG_ENABLED_KEY) === "true";
 
 export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
+  // Sardine
+  sardineConfig,
+  chainalysisConfig,
+
   // Modal:
   open,
   onClose,
@@ -146,7 +175,8 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
   acceptedCreditCardNetworks,
   network,
   dictionary: parentDictionary,
-
+  hideDiscount,
+  confirmationType = "primary",
   // Legal:
   consentType,
 
@@ -166,15 +196,13 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
   onError,
 }) => {
   const [debug, setDebug] = useState(!!parentDebug);
-
+  const [wireInstructions, setWireInstructions] = useState<WireInstructions>();
   // Initialization, just to prevent issues with Next.js' SSR:
 
   useEffect(() => {
     setDebug((prevDebug) => {
       const nextDebug = prevDebug || DEV_DEBUG_ENABLED;
-
       if (nextDebug) console.log("\n🐞 DEBUG MODE ENABLED!\n\n");
-
       return nextDebug;
     });
   }, []);
@@ -216,6 +244,43 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
   }, [meLoading, meData, network]);
 
 
+  const [sardineContext, setSardineContext] = useState({ config: { sessionKey: "" } });
+
+  useEffect(() => {
+    const loader = document.createElement("script");
+
+    if (sardineConfig.isSardineEnabled) {
+      const sardineHost = sardineConfig.host;
+
+      let localSardineCtxt = null;
+      loader.type = "text/javascript";
+      loader.async = true;
+      loader.src = `https://${ sardineHost }/assets/loader.min.js`;
+      loader.onload = function createSardineContext() {
+        /* eslint no-underscore-dangle: ["error", { "allow": ["_Sardine"] }] */
+        const user: any = meData?.me?.user;
+        localSardineCtxt = window._Sardine.createContext({
+          clientId: sardineConfig.clientId,
+          sessionKey: uuid(),
+          userIdHash: user?.id,
+          flow: window.location.pathname,
+          parentElement: document.body,
+          environment: sardineConfig.environment,
+          onDeviceResponse(data: any) {
+            console.log(`sardine's deviceID is ${ data.deviceId }`);
+          },
+        });
+        setSardineContext(localSardineCtxt);
+      };
+    }
+    document.body.appendChild(loader);
+
+    return () => {
+      document.body.removeChild(loader);
+    };
+  }, [meData, sardineConfig]);
+
+
   // Get everything related to Payment UI routing, error and state handling, including resuming Plaid / 3DS flows:
 
   const paymentIdParamRef = useRef(paymentIdParam);
@@ -250,6 +315,7 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
     taxes,
     setTaxes,
     wallet,
+    disablePurchaseBtn,
     setWalletAddress,
     paymentID,
     processorPaymentID,
@@ -260,6 +326,7 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
     paymentIdParam: paymentIdParamRef.current,
     productConfirmationEnabled,
     vertexEnabled,
+    isChainalysisEnaled: chainalysisConfig.isChainalysisEnabled,
     isAuthenticated,
     onError,
     debug,
@@ -302,7 +369,6 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
 
   const rawSavedPaymentMethods = paymentMethodsData?.getPaymentMethodList;
   const savedPaymentMethods = useMemo(() => transformRawSavedPaymentMethods(rawSavedPaymentMethods as RawSavedPaymentMethod[]), [rawSavedPaymentMethods]);
-
   const invoiceItems = invoiceDetailsData?.getInvoiceDetails.items;
   const destinationAddress = (invoiceItems || [])?.[0]?.destinationAddress || NEW_WALLET_OPTION.value;
 
@@ -416,12 +482,13 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
       hasBeenInitRef.current = true;
 
       const { flowType, url } = initModalState();
+      if (debug) console.log("[TEST]-Checkout", { flowType, url, loaderMode });
 
       if (flowType === "" && loaderMode !== "default") {
         onGoTo(url || "/", { replace: true, reason: "Invalid modal state." });
       }
     }
-  }, [open, isAuthLoading, loaderMode, isDialogLoading, initModalState, onGoTo]);
+  }, [debug, open, isAuthLoading, loaderMode, isDialogLoading, initModalState, onGoTo]);
 
 
   // Data loading error handling:
@@ -599,8 +666,14 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
 
   // Purchase:
 
-  const handlePurchaseSuccess = useCallback(async (nextCirclePaymentID: string, nextPaymentID:string, redirectURL: string) => {
+  const handlePurchaseSuccess = useCallback(async (purchasDetails: PurchasDetails) => {
+    const { redirectURL } = purchasDetails;
+    const nextCirclePaymentID = purchasDetails.processorPaymentID;
+    const nextPaymentID = purchasDetails.paymentID;
+
     setPayments(nextCirclePaymentID, nextPaymentID);
+    setWireInstructions(purchasDetails.wireInstructions);
+    if (debug) console.log("Checkout Payment success page ", { nextCirclePaymentID, nextPaymentID, redirectURL, wireInstruction: purchasDetails.wireInstructions });
 
     setTimeout(() => triggerAnalyticsEventRef.current("event:paymentSuccess"));
 
@@ -869,6 +942,7 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
       <BillingView
         invoiceItemIDs={ invoiceAndReservationState.invoiceItemIDs }
         orgID={ orgID }
+        hideDiscount={ hideDiscount ?? false }
         vertexEnabled={ vertexEnabled }
         checkoutItems={ checkoutItems }
         savedPaymentMethods={ savedPaymentMethods }
@@ -895,13 +969,18 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
       <PaymentView
         invoiceItemIDs={ invoiceAndReservationState.invoiceItemIDs }
         orgID={ orgID }
+        sessionKey={ sardineContext?.config?.sessionKey }
+        isSardineEnabled={ sardineConfig.isSardineEnabled }
+        userId={ meData?.me?.user?.id }
         invoiceID={ invoiceID }
+        hideDiscount={ hideDiscount ?? false }
         invoiceCountdownStart={ invoiceCountdownStart }
         checkoutItems={ checkoutItems }
         taxes={ taxes }
         savedPaymentMethods={ savedPaymentMethods }
         selectedPaymentMethod={ selectedPaymentMethod }
         wallet={ wallet }
+        disablePurchaseBtn={ disablePurchaseBtn || false }
         wallets={ wallets }
         multiSigEnabled={ multiSigEnabled }
         marketType={ marketType }
@@ -932,6 +1011,7 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
         purchasingMessages={ purchasingMessages }
         orgID={ orgID }
         invoiceID={ invoiceID }
+        sardineSessionKey={ sardineContext?.config?.sessionKey }
         invoiceCountdownStart={ invoiceCountdownStart }
         checkoutItems={ checkoutItems }
         savedPaymentMethods={ savedPaymentMethods }
@@ -944,19 +1024,29 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
     );
   } else if (checkoutStep === "confirmation") {
     headerVariant = "logoOnly";
-
-    checkoutStepElement = (
-      <ConfirmationView
-        checkoutItems={ checkoutItems }
-        displayCurrency={ displayCurrency }
-        cryptoCurrencies={ cryptoCurrencies }
-        savedPaymentMethods={ savedPaymentMethods }
-        selectedPaymentMethod={ selectedPaymentMethod }
-        processorPaymentID={ processorPaymentID }
-        wallet={ wallet }
-        onNext={ handlePurchaseCompleted }
-        onGoTo={ handleGoTo } />
-    );
+    if (wireInstructions || confirmationType === "secondary") {
+      checkoutStepElement = (
+        <SecondaryConfirmationView
+          wireInstructions={ wireInstructions }
+          checkoutItems={ checkoutItems }
+          wallet={ wallet }
+          selectedPaymentMethod={ selectedPaymentMethod }
+          onNext={ handlePurchaseCompleted } />
+      );
+    } else {
+      checkoutStepElement = (
+        <ConfirmationView
+          checkoutItems={ checkoutItems }
+          displayCurrency={ displayCurrency }
+          cryptoCurrencies={ cryptoCurrencies }
+          savedPaymentMethods={ savedPaymentMethods }
+          selectedPaymentMethod={ selectedPaymentMethod }
+          processorPaymentID={ processorPaymentID }
+          wallet={ wallet }
+          onNext={ handlePurchaseCompleted }
+          onGoTo={ handleGoTo } />
+      );
+    }
   } else {
     console.warn("Unknown checkoutStepElement!");
 
@@ -973,7 +1063,7 @@ export const PUICheckoutOverlay: React.FC<PUICheckoutOverlayProps> = ({
       countdownElementRef={ countdownElementRef }
       logoSrc={ logoSrc }
       logoSx={ logoSx }
-      user={ meData?.me?.user }
+      user={ meData?.me?.user as User }
       userFormat={ userFormat }
       onLogin={ onLogin }
       onClose={ checkoutStep === startAt ? handleClose : undefined }

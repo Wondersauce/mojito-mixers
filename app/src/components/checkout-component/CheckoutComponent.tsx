@@ -76,6 +76,18 @@ export const CheckoutComponent: React.FC<PUICheckoutComponentProps> = ({
     uri: `${ config.API_HOSTNAME }/query`,
     getAuthenticationToken,
 
+    // Sardine
+    sardineConfig: {
+      host: "api.sandbox.sardine.ai",
+      clientId: "30e33d73-f443-4178-9ac5-e7f100f4c6cb",
+      environment: "sandbox",
+      isSardineEnabled: true,
+    },
+
+    chainalysisConfig: {
+      isChainalysisEnabled: true,
+    },
+
     // Modal:
     // open,
     // onClose,
@@ -85,6 +97,8 @@ export const CheckoutComponent: React.FC<PUICheckoutComponentProps> = ({
     // loaderMode,
     paymentIdParam,
     paymentErrorParam,
+    hideDiscount: true,
+    confirmationType: "secondary",
     guestCheckoutEnabled: false,
     productConfirmationEnabled: false,
     vertexEnabled: true,

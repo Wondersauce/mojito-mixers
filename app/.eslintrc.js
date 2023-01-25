@@ -71,6 +71,7 @@ module.exports = {
     "quotes": [2, "double"],
     "semi": 2,
     "template-curly-spacing": [2, "always"],
+    "object-curly-spacing": ["error", "always"],
 
 
     // eslint-plugin-import:

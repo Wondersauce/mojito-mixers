@@ -1,11 +1,12 @@
 import { useCallback } from "react";
 import { FetchResult, MutationResult } from "@apollo/client";
-import { CreatePaymentMethodMutation, PaymentType, useCreatePaymentMethodMutation, AchMetadata, CreditCardMetadata, CreditCardBillingDetails, useGetPaymentMethodStatusLazyQuery, AchBillingDetails } from "../queries/graphqlGenerated";
+import { CreatePaymentMethodMutation, PaymentType, useCreatePaymentMethodMutation, AchMetadata, CreditCardMetadata, CreditCardBillingDetails, useGetPaymentMethodStatusLazyQuery, AchBillingDetails, WireBillingDetailsOutput } from "../queries/graphqlGenerated";
 import { BillingInfo } from "../forms/BillingInfoForm";
 import { PaymentMethod } from "../domain/payment/payment.interfaces";
 import { useEncryptCardData } from "./useEncryptCard";
 import { billingInfoToBillingDetails, formatPhoneAsE123 } from "../domain/circle/circle.utils";
 import { PaymentMethodStatus } from "../domain/circle/circle.interfaces";
+import { CountryBankType } from "../domain/payment/payment.constants";
 import { wait } from "../utils/promiseUtils";
 import { PAYMENT_CREATION_INTERVAL_MS, PAYMENT_CREATION_MAX_WAIT_MS } from "../config/config";
 import { EXCEPTIONS } from "../domain/errors/exceptions.constants";
@@ -89,6 +90,34 @@ export function useCreatePaymentMethod({
           orgID,
           input: {
             paymentType: PaymentType.Crypto,
+          },
+        },
+      });
+    } else if (paymentInfo.type === PaymentType.Wire) {
+      const country = paymentInfo.bankCountry.value || "US"; // default
+      const iban = country + paymentInfo.iban;
+      const { accountNumber, routingNumber } = paymentInfo;
+      const params = paymentInfo.bankCountryType === CountryBankType.USA ? {
+        accountNumber,
+        routingNumber,
+      } : { iban };
+
+      if (debug) { console.log("paymentInfo", { paymentInfo, params }); }
+
+      createPaymentMethodPromise = createPaymentMethod({
+        variables: {
+          orgID,
+          input: {
+            paymentType: PaymentType.Wire,
+            wireData: {
+              ...params,
+              bankAddress: {
+                city: paymentInfo.bankCity,
+                bankName: paymentInfo.bankName,
+                country,
+              },
+              billingDetails: billingInfoToBillingDetails<WireBillingDetailsOutput>(billingInfo),
+            },
           },
         },
       });

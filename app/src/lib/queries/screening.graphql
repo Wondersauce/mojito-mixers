@@ -1,0 +1,10 @@
+mutation AddressScreening($orgId: UUID1!, $input: AddressScreeningInput!) {
+  addressScreening(orgID: $orgId, input: $input) 
+}
+
+query CardScreening($orgId: UUID1!, $input: CardScreeningInput!) {
+  cardScreening(orgID: $orgId, input: $input) {
+    level,
+    status
+  }
+}

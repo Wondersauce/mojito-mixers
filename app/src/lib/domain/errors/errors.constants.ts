@@ -110,4 +110,8 @@ export const MAPPED_ERRORS: Record<string, MappedError> = {
     fieldName: "fullName",
     errorMessage: withFullNameErrorMessage({ label: "Full Name" }),
   },
+  INVALID_WALLET: {
+    errorLocation: "close",
+    errorMessage: "Please contact support team",
+  },
 };

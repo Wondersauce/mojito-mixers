@@ -18,6 +18,7 @@ import { Wallet } from "../../domain/wallet/wallet.interfaces";
 import { CreditCardNetwork } from "../../domain/react-payment-inputs/react-payment-inputs.utils";
 import { usePromoCode } from "../../utils/promoCodeUtils";
 import { Market } from "../../components/public/CheckoutOverlay/CheckoutOverlay";
+import { useCheckoutItemsCostTotal } from "../../hooks/useCheckoutItemCostTotal";
 
 const billingInfoItemBoxProps: BoxProps = { sx: { mt: 2.5 } };
 
@@ -28,7 +29,11 @@ interface PaymentViewState {
 
 export interface PaymentViewProps {
   orgID: string;
+  sessionKey: string;
+  isSardineEnabled: boolean;
+  userId: string;
   invoiceID: string;
+  hideDiscount: boolean;
   invoiceCountdownStart: number;
   checkoutItems: CheckoutItem[];
   taxes: null | TaxesState;
@@ -36,6 +41,7 @@ export interface PaymentViewProps {
   selectedPaymentMethod: SelectedPaymentMethod;
   wallets?: Wallet[];
   wallet: null | string | Wallet;
+  disablePurchaseBtn: boolean;
   multiSigEnabled: boolean;
   checkoutError?: CheckoutModalError;
   onPaymentInfoSelected: (data: string | PaymentMethod) => void;
@@ -57,7 +63,11 @@ export interface PaymentViewProps {
 
 export const PaymentView: React.FC<PaymentViewProps> = ({
   orgID,
+  sessionKey,
+  isSardineEnabled,
+  userId,
   invoiceID,
+  hideDiscount,
   invoiceCountdownStart,
   checkoutItems,
   taxes,
@@ -65,6 +75,7 @@ export const PaymentView: React.FC<PaymentViewProps> = ({
   selectedPaymentMethod,
   wallets,
   wallet,
+  disablePurchaseBtn = false,
   multiSigEnabled,
   checkoutError,
   onPaymentInfoSelected,
@@ -100,6 +111,8 @@ export const PaymentView: React.FC<PaymentViewProps> = ({
     paymentInfo: selectedPaymentInfo,
   } = selectedPaymentMethod;
 
+  const { total } = useCheckoutItemsCostTotal(checkoutItems);
+
   const savedPaymentMethods = useMemo(() => {
     if (typeof selectedBillingInfo !== "string") return [];
 
@@ -123,6 +136,11 @@ export const PaymentView: React.FC<PaymentViewProps> = ({
   });
 
   const [formSubmitAttempted, setFormSubmitAttempted] = useState(false);
+  const [selectedPaymentType, setSelectedPaymentType] = useState<PaymentType>();
+
+  const handleChangePaymentType = useCallback((paymentType: PaymentType) => {
+    setSelectedPaymentType(paymentType);
+  }, []);
 
   const handleShowForm = useCallback(() => {
     setViewState({ isDeleting: false, showSaved: false });
@@ -212,16 +230,27 @@ export const PaymentView: React.FC<PaymentViewProps> = ({
             debug={ debug } />
         ) : (
           <PaymentMethodForm
+            sardineInfo={{
+              orgID,
+              sessionKey,
+              userId,
+              billingAddress: selectedPaymentMethodBillingInfo.billingDetails,
+              email: selectedPaymentMethodBillingInfo.metadata.email,
+              total,
+              isSardineEnabled,
+            }}
             acceptedPaymentTypes={ acceptedPaymentTypes }
             acceptedCreditCardNetworks={ acceptedCreditCardNetworks }
             defaultValues={ typeof selectedPaymentInfo === "string" || selectedPaymentInfo === null ? undefined : selectedPaymentInfo }
             checkoutError={ checkoutError }
             plaidLoading={ plaidLoading }
             plaidError={ plaidError }
+            disablePurchaseBtn={ disablePurchaseBtn }
             onPlaidLinkClicked={ onPlaidLinkClicked }
             refetchPlaidLink={ refetchPlaidLink }
             onSaved={ savedPaymentMethods.length > 0 ? handleShowSaved : undefined }
             onClose={ onClose }
+            onChangePaymentType={ handleChangePaymentType }
             onSubmit={ handleSubmit }
             onAttemptSubmit={ handleFormAttemptSubmit }
             marketType={ marketType }
@@ -236,6 +265,9 @@ export const PaymentView: React.FC<PaymentViewProps> = ({
       <CheckoutDeliveryAndItemCostBreakdown
         checkoutItems={ checkoutItems }
         taxes={ taxes }
+        showWalletAddress
+        hideDiscount={ hideDiscount }
+        hideWalletSelection={ (!showSaved && selectedPaymentType === "CreditCard") || (showSaved && selectedPaymentMethod?.paymentType === "CreditCard") }
         displayCurrency={ displayCurrency }
         cryptoCurrencies={ cryptoCurrencies }
         onlyCryptoWarningVariant={ marketType === "secondary" ? "link" : undefined }

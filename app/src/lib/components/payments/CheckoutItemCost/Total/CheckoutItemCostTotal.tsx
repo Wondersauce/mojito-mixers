@@ -42,6 +42,7 @@ const ROW_SX: SxProps<Theme> = {
 export interface CheckoutItemCostTotalProps {
   total: number;
   fees: number | null;
+  hideDiscount: boolean;
   taxes: null | TaxesState;
   displayCurrency: FiatCurrency;
   cryptoCurrencies?: CryptoCurrency[];
@@ -51,6 +52,7 @@ export interface CheckoutItemCostTotalProps {
 export const CheckoutItemCostTotal: React.FC<CheckoutItemCostTotalProps> = ({
   total,
   fees,
+  hideDiscount,
   taxes,
   displayCurrency,
   cryptoCurrencies,
@@ -167,6 +169,7 @@ export const CheckoutItemCostTotal: React.FC<CheckoutItemCostTotalProps> = ({
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       { withDetails && (
         <>
+          { !hideDiscount && (
           <Box sx={{ ...ROW_SX, mt: 2, mb: 3 }}>
             <TextField
               label="Discount code"
@@ -187,6 +190,7 @@ export const CheckoutItemCostTotal: React.FC<CheckoutItemCostTotalProps> = ({
                 ),
               }} />
           </Box>
+          ) }
 
           <Box sx={ ROW_SX }>
             <Typography>Subtotal</Typography>

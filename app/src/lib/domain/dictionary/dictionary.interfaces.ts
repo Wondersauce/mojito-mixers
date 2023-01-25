@@ -5,8 +5,11 @@ export type PUIDictionary = {
   walletInfo: PUIDictionarySingleLine;
   walletMultiSigTooltip: PUIDictionarySingleLine;
 
+  wireConfirmationInstruction: PUIDictionarySingleLine;
   wirePaymentsDisclaimer: PUIDictionaryMultiLine;
   purchaseInstructions: PUIDictionaryMultiLine;
+  creditCardPurchaseInstructions: PUIDictionarySingleLine;
+  cryptoPurchaseInstructions: PUIDictionarySingleLine;
 
   privacyHref?: string;
   termsOfUseHref?: string;

@@ -10,7 +10,7 @@ import { getUrlWithoutParams } from "../domain/url/url.utils";
 import { Wallet } from "../domain/wallet/wallet.interfaces";
 import { filterSpecialWalletAddressValues } from "../domain/wallet/wallet.utils";
 import { BillingInfo } from "../forms/BillingInfoForm";
-import { CreatePaymentMetadataInput, CryptoBillingDetails, useCreatePaymentMutation } from "../queries/graphqlGenerated";
+import { CreatePaymentMetadataInput, CryptoBillingDetails, CryptoPaymentDetails, useCreatePaymentMutation, WirePaymentDetails, WireInstructions } from "../queries/graphqlGenerated";
 import { useCreatePaymentMethod } from "./useCreatePaymentMethod";
 import { useEncryptCardData } from "./useEncryptCard";
 
@@ -23,6 +23,7 @@ export function getLastPaymentMethodID() {
 export interface UseFullPaymentOptions {
   orgID: string;
   invoiceID: string;
+  sardineSessionKey?: string;
   checkoutItems: CheckoutItem[];
   savedPaymentMethods: SavedPaymentMethod[];
   selectedPaymentMethod: SelectedPaymentMethod;
@@ -39,11 +40,13 @@ export interface FullPaymentState {
   paymentID: string;
   hostedURL: string;
   paymentError?: string | CheckoutModalError;
+  wireInstructions?: WireInstructions
 }
 
 export function useFullPayment({
   orgID,
   invoiceID,
+  sardineSessionKey,
   checkoutItems,
   savedPaymentMethods,
   selectedPaymentMethod,
@@ -202,6 +205,11 @@ export function useFullPayment({
       metadata.discountCodeID = discountCodeID;
     }
 
+    if (sardineSessionKey) {
+      // metadata.sardineSessionKey = sardineSessionKey;
+      console.log("Sardine session key exist");
+    }
+
     if (paymentType === "CreditCard" && cvv) {
       const encryptCardDataResult = await encryptCardData({
         cvv,
@@ -258,27 +266,29 @@ export function useFullPayment({
 
       processorPaymentID = makePaymentResult.data?.createPayment?.processorPaymentID || "";
       paymentID = makePaymentResult.data?.createPayment?.id || "";
-      hostedURL = makePaymentResult.data?.createPayment?.details?.hostedURL || "";
+      hostedURL = (makePaymentResult.data?.createPayment?.details as CryptoPaymentDetails)?.hostedURL || "";
     }
 
-    if (!processorPaymentID) {
-      setError(ERROR_PURCHASE_PAYING(mutationError));
+    const wireInstructions = ((makePaymentResult?.data?.createPayment?.details as WirePaymentDetails))?.WireInstructions as WireInstructions;
 
+    if (!processorPaymentID && (wireInstructions === null || wireInstructions === undefined)) {
+      setError(ERROR_PURCHASE_PAYING(mutationError));
       return;
     }
 
     // TODO: Error handling and automatic retry:
-
     setPaymentState({
       paymentStatus: "processed",
       paymentMethodID,
       processorPaymentID,
       paymentID,
       hostedURL,
+      wireInstructions,
     });
   }, [
     orgID,
     invoiceID,
+    sardineSessionKey,
     checkoutItems,
     savedPaymentMethods,
     selectedPaymentMethod,
